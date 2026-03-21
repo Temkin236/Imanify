@@ -1,0 +1,164 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  Home as HomeIcon, 
+  BookOpen, 
+  MessageSquare, 
+  Heart, 
+  Settings, 
+  Moon, 
+  Sun,
+  ChevronLeft,
+  Menu,
+  X,
+  Sparkles,
+  Calendar
+} from 'lucide-react';
+
+interface LayoutProps {
+  children: React.ReactNode;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  isRamadanMode: boolean;
+}
+
+export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, isRamadanMode }) => {
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  const tabs = [
+    { id: 'home', icon: HomeIcon, label: 'Home' },
+    { id: 'quran', icon: BookOpen, label: 'Quran' },
+    { id: 'azkar', icon: Heart, label: 'Azkar' },
+    { id: 'calendar', icon: Calendar, label: 'Calendar' },
+    { id: 'chat', icon: MessageSquare, label: 'Assistant' },
+  ];
+
+  return (
+    <div className={`min-h-screen flex flex-col relative overflow-hidden ${isDarkMode ? 'bg-islamic-green-950 text-white' : 'bg-white text-islamic-green-950'}`}>
+      {/* Dynamic Background */}
+      {isDarkMode && (
+        <>
+          <div className={`fixed inset-0 transition-colors duration-1000 ${isRamadanMode ? 'bg-gradient-to-b from-[#0F3D2E] to-[#071A13]' : 'bg-islamic-green-950'}`} />
+          <div className="stars-layer">
+            {[...Array(50)].map((_, i) => (
+              <div 
+                key={i} 
+                className="star" 
+                style={{ 
+                  top: `${Math.random() * 100}%`, 
+                  left: `${Math.random() * 100}%`, 
+                  width: `${Math.random() * 3}px`, 
+                  height: `${Math.random() * 3}px`,
+                  '--duration': `${2 + Math.random() * 4}s` 
+                } as any} 
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Mosque Silhouette Overlay */}
+      <div className={`mosque-silhouette transition-opacity duration-1000 ${isRamadanMode ? 'opacity-10' : 'opacity-05'}`} />
+
+      {/* Header */}
+      <header className="sticky top-0 z-50 px-6 py-4 flex items-center justify-between backdrop-blur-xl bg-islamic-green-950/40 border-b border-white/5">
+        <div className="flex items-center gap-3" onClick={() => setActiveTab('home')}>
+          <div className="w-12 h-12 bg-islamic-green-900 border border-gold-500/30 rounded-2xl flex items-center justify-center shadow-lg shadow-gold-500/10 relative group cursor-pointer overflow-hidden">
+            <div className="absolute inset-0 bg-gold-500/5 group-hover:bg-gold-500/10 transition-colors" />
+            <div className="relative flex items-center justify-center">
+              <Moon size={24} className={`text-gold-500 absolute -top-1 -right-1 rotate-12 transition-transform duration-1000 ${isRamadanMode ? 'scale-110' : 'scale-100'}`} fill="currentColor" />
+              <BookOpen size={20} className="text-gold-400 relative z-10" />
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-bold tracking-tight leading-none italic accent-font text-gold-400">Imanify</h1>
+            <span className="arabic-text text-[10px] text-white/40 leading-none mt-1 tracking-widest">إيمَانِፍአይ</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          {isRamadanMode && (
+            <button 
+              onClick={() => setActiveTab('ramadan')}
+              className="p-2.5 rounded-2xl bg-gold-500/10 hover:bg-gold-500/20 transition-all border border-gold-500/20 text-gold-400"
+            >
+              <Moon size={20} fill="currentColor" />
+            </button>
+          )}
+          <button 
+            onClick={() => setActiveTab('settings')}
+            className={`p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 transition-all border border-white/5 ${activeTab === 'settings' ? 'text-gold-400' : ''}`}
+          >
+            <Settings size={20} />
+          </button>
+          <button 
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 transition-all border border-white/5"
+          >
+            {isDarkMode ? <Sun size={20} className="text-gold-400" /> : <Moon size={20} />}
+          </button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 pb-28 overflow-x-hidden relative z-10">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.02 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="max-w-2xl mx-auto px-5 py-6"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+
+      {/* Mosque Silhouette (Subtle) - Removed old SVG in favor of CSS class */}
+
+      {/* Floating Chatbot Button */}
+      <motion.button
+        onClick={() => setActiveTab('chat')}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-28 right-6 z-50 w-16 h-16 bg-gold-500 rounded-full flex items-center justify-center shadow-2xl shadow-gold-500/40 border-4 border-islamic-green-950 group overflow-hidden glow-on-click"
+      >
+        <div className="absolute inset-0 bg-islamic-green-950/10 group-hover:bg-islamic-green-950/0 transition-colors" />
+        <div className="relative flex items-center justify-center">
+          <MessageSquare size={28} className="text-islamic-green-950" fill="currentColor" />
+          <Sparkles size={14} className="absolute -top-1 -right-1 text-islamic-green-950 animate-pulse" />
+        </div>
+      </motion.button>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-6 left-6 right-6 z-50 bg-islamic-green-900/80 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] px-4 py-3 shadow-2xl">
+        <div className="max-w-md mx-auto flex items-center justify-between">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex flex-col items-center gap-1.5 transition-all relative ${isActive ? 'text-gold-500' : 'text-white/40 hover:text-white'}`}
+              >
+                {isActive && (
+                  <motion.div 
+                    layoutId="nav-active"
+                    className="absolute -top-1 w-1 h-1 bg-gold-500 rounded-full"
+                  />
+                )}
+                <div className={`p-2.5 rounded-2xl transition-all ${isActive ? 'bg-gold-500/10 scale-110' : ''}`}>
+                  <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                </div>
+                <span className="text-[9px] font-bold uppercase tracking-[0.15em]">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
+  );
+};

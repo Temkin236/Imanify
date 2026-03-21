@@ -1,0 +1,5 @@
+{
+  "name": "Imanify",
+  "description": "Your Daily Deen Companion 🌙 - A modern Islamic app for Quran, Azkar, and AI guidance.",
+  "requestFramePermissions": ["geolocation"]
+}

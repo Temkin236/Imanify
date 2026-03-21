@@ -1,0 +1,168 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&family=Noto+Sans+Ethiopic:wght@300;400;500;600;700&family=Caveat:wght@400;700&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "Amiri", serif;
+  --font-amharic: "Noto Sans Ethiopic", sans-serif;
+  --font-accent: "Caveat", cursive;
+
+  --color-islamic-green-950: #051a14;
+  --color-islamic-green-900: #0f3d2e;
+  --color-islamic-green-800: #1a5241;
+  --color-islamic-green-700: #266b56;
+  --color-gold-500: #d4af37;
+  --color-gold-400: #e5c76b;
+  --color-sunset-orange: #ff7e5f;
+  --color-sunset-purple: #feb47b;
+}
+
+@layer base {
+  body {
+    @apply bg-islamic-green-950 text-white font-sans antialiased;
+    background: linear-gradient(180deg, #0F3D2E 0%, #071A13 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  .arabic-text {
+    @apply font-arabic;
+    direction: rtl;
+  }
+
+  .amharic-text {
+    @apply font-amharic;
+  }
+
+  .accent-font {
+    @apply font-accent;
+  }
+}
+
+/* Human-like Spacing & Imperfections */
+.card-natural {
+  @apply rounded-[2.5rem] border border-white/5 shadow-2xl;
+  padding: 1.6rem 1.4rem; /* Slightly asymmetrical for human feel */
+}
+
+.card-variation-1 {
+  @apply rounded-[2.8rem] rotate-[0.2deg];
+}
+
+.card-variation-2 {
+  @apply rounded-[2.2rem] -rotate-[0.1deg];
+}
+
+.night-sky-gradient {
+  background: linear-gradient(180deg, #0F3D2E 0%, #071A13 100%);
+}
+
+.mosque-silhouette {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30vh;
+  background-image: url('https://www.transparenttextures.com/patterns/mosque.png'); /* Placeholder or CSS shape */
+  background-repeat: repeat-x;
+  background-position: bottom;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.paper-texture {
+  background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+  background-color: #071A13;
+}
+
+.glow-on-click:active {
+  box-shadow: 0 0 20px 5px rgba(212, 175, 55, 0.4);
+  transform: scale(0.98);
+  transition: all 0.1s ease;
+}
+
+.stars-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: twinkle var(--duration) infinite ease-in-out;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.2); }
+}
+
+.sunset-glow {
+  box-shadow: 0 0 60px 20px rgba(255, 126, 95, 0.15);
+}
+
+.sunset-gradient {
+  background: linear-gradient(to bottom, #ff7e5f 0%, #feb47b 100%);
+}
+
+.stars-animation {
+  background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px);
+  background-size: 550px 550px;
+  animation: stars 100s linear infinite;
+}
+
+.particles-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: float 20s infinite linear;
+}
+
+@keyframes float {
+  0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 0.3; }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-10vh) translateX(20px); opacity: 0; }
+}
+
+@keyframes stars {
+  from { background-position: 0 0; }
+  to { background-position: 10000px 5000px; }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-islamic-green-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gold-500/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gold-500/50;
+}
