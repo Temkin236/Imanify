@@ -38,7 +38,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
       {/* Dynamic Background */}
       {isDarkMode && (
         <>
-          <div className={`fixed inset-0 transition-colors duration-1000 ${isRamadanMode ? 'bg-gradient-to-b from-[#0F3D2E] to-[#071A13]' : 'bg-islamic-green-950'}`} />
+          <div className={`fixed inset-0 transition-colors duration-1000 ${isRamadanMode ? 'bg-linear-to-b from-[#0F3D2E] to-[#071A13]' : 'bg-islamic-green-950'}`} />
           <div className="stars-layer">
             {[...Array(50)].map((_, i) => (
               <div 
@@ -58,10 +58,20 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
       )}
 
       {/* Mosque Silhouette Overlay */}
-      <div className={`mosque-silhouette transition-opacity duration-1000 ${isRamadanMode ? 'opacity-10' : 'opacity-05'}`} />
+      <div
+        className={`mosque-silhouette transition-opacity duration-1000 ${
+          isDarkMode ? (isRamadanMode ? 'opacity-10' : 'opacity-05') : 'opacity-[0.03]'
+        }`}
+      />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 px-6 py-4 flex items-center justify-between backdrop-blur-xl bg-islamic-green-950/40 border-b border-white/5">
+      <header
+        className={`sticky top-0 z-50 px-6 py-4 flex items-center justify-between backdrop-blur-xl border-b ${
+          isDarkMode
+            ? 'bg-islamic-green-950/40 border-white/5'
+            : 'bg-white/90 border-islamic-green-900/10 shadow-sm'
+        }`}
+      >
         <div className="flex items-center gap-3" onClick={() => setActiveTab('home')}>
           <div
             className={`w-11 h-11 flex items-center justify-center rounded-full border shadow-sm cursor-pointer transition-colors ${
@@ -85,22 +95,34 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
           {isRamadanMode && (
             <button 
               onClick={() => setActiveTab('ramadan')}
-              className="p-2.5 rounded-2xl bg-gold-500/10 hover:bg-gold-500/20 transition-all border border-gold-500/20 text-gold-400"
+              className={`p-2.5 rounded-2xl transition-all border ${
+                isDarkMode
+                  ? 'bg-gold-500/10 hover:bg-gold-500/20 border-gold-500/20 text-gold-400'
+                  : 'bg-amber-100 hover:bg-amber-200 border-amber-300 text-amber-700'
+              }`}
             >
               <Moon size={20} fill="currentColor" />
             </button>
           )}
           <button 
             onClick={() => setActiveTab('settings')}
-            className={`p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 transition-all border border-white/5 ${activeTab === 'settings' ? 'text-gold-400' : ''}`}
+            className={`p-2.5 rounded-2xl transition-all border ${
+              isDarkMode
+                ? 'bg-white/5 hover:bg-white/10 border-white/5 text-white/80'
+                : 'bg-islamic-green-50 hover:bg-islamic-green-100 border-islamic-green-900/15 text-islamic-green-800'
+            } ${activeTab === 'settings' ? (isDarkMode ? 'text-gold-400' : 'text-amber-700') : ''}`}
           >
             <Settings size={20} />
           </button>
           <button 
             onClick={() => setIsDarkMode(!isDarkMode)}
-            className="p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 transition-all border border-white/5"
+            className={`p-2.5 rounded-2xl transition-all border ${
+              isDarkMode
+                ? 'bg-white/5 hover:bg-white/10 border-white/5 text-white/80'
+                : 'bg-islamic-green-50 hover:bg-islamic-green-100 border-islamic-green-900/15 text-islamic-green-800'
+            }`}
           >
-            {isDarkMode ? <Sun size={20} className="text-gold-400" /> : <Moon size={20} />}
+            {isDarkMode ? <Sun size={20} className="text-gold-400" /> : <Moon size={20} className="text-amber-700" />}
           </button>
         </div>
       </header>
@@ -128,17 +150,40 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
         onClick={() => setActiveTab('chat')}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-28 right-6 z-50 w-16 h-16 bg-gold-500 rounded-full flex items-center justify-center shadow-2xl shadow-gold-500/40 border-4 border-islamic-green-950 group overflow-hidden glow-on-click"
+        className={`fixed bottom-28 right-6 z-50 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 group overflow-hidden glow-on-click ${
+          isDarkMode
+            ? 'bg-gold-500 shadow-gold-500/40 border-islamic-green-950'
+            : 'bg-amber-400 shadow-amber-500/35 border-white'
+        }`}
       >
-        <div className="absolute inset-0 bg-islamic-green-950/10 group-hover:bg-islamic-green-950/0 transition-colors" />
+        <div
+          className={`absolute inset-0 transition-colors ${
+            isDarkMode
+              ? 'bg-islamic-green-950/10 group-hover:bg-islamic-green-950/0'
+              : 'bg-amber-700/10 group-hover:bg-amber-700/0'
+          }`}
+        />
         <div className="relative flex items-center justify-center">
-          <MessageSquare size={28} className="text-islamic-green-950" fill="currentColor" />
-          <Sparkles size={14} className="absolute -top-1 -right-1 text-islamic-green-950 animate-pulse" />
+          <MessageSquare
+            size={28}
+            className={isDarkMode ? 'text-islamic-green-950' : 'text-amber-900'}
+            fill="currentColor"
+          />
+          <Sparkles
+            size={14}
+            className={`absolute -top-1 -right-1 animate-pulse ${isDarkMode ? 'text-islamic-green-950' : 'text-amber-900'}`}
+          />
         </div>
       </motion.button>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-6 left-6 right-6 z-50 bg-islamic-green-900/80 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] px-4 py-3 shadow-2xl">
+      <nav
+        className={`fixed bottom-6 left-6 right-6 z-50 backdrop-blur-2xl border rounded-[2.5rem] px-4 py-3 shadow-2xl ${
+          isDarkMode
+            ? 'bg-islamic-green-900/80 border-white/10'
+            : 'bg-white/95 border-islamic-green-900/15 shadow-islamic-green-900/10'
+        }`}
+      >
         <div className="max-w-md mx-auto flex items-center justify-between">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -147,15 +192,25 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-col items-center gap-1.5 transition-all relative ${isActive ? 'text-gold-500' : 'text-white/40 hover:text-white'}`}
+                className={`flex flex-col items-center gap-1.5 transition-all relative ${
+                  isActive
+                    ? (isDarkMode ? 'text-gold-500' : 'text-amber-700')
+                    : (isDarkMode ? 'text-white/40 hover:text-white' : 'text-islamic-green-800/50 hover:text-islamic-green-900')
+                }`}
               >
                 {isActive && (
                   <motion.div 
                     layoutId="nav-active"
-                    className="absolute -top-1 w-1 h-1 bg-gold-500 rounded-full"
+                    className={`absolute -top-1 w-1 h-1 rounded-full ${isDarkMode ? 'bg-gold-500' : 'bg-amber-700'}`}
                   />
                 )}
-                <div className={`p-2.5 rounded-2xl transition-all ${isActive ? 'bg-gold-500/10 scale-110' : ''}`}>
+                <div
+                  className={`p-2.5 rounded-2xl transition-all ${
+                    isActive
+                      ? (isDarkMode ? 'bg-gold-500/10 scale-110' : 'bg-amber-200/70 scale-110')
+                      : ''
+                  }`}
+                >
                   <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span className="text-[9px] font-bold uppercase tracking-[0.15em]">{tab.label}</span>
