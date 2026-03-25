@@ -66,7 +66,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
 
       {/* Header */}
       <header
-        className={`sticky top-0 z-50 px-6 py-4 flex items-center justify-between backdrop-blur-xl border-b ${
+        className={`sticky top-0 z-50 px-3 sm:px-6 lg:px-10 py-3 sm:py-4 flex items-center justify-between backdrop-blur-xl border-b ${
           isDarkMode
             ? 'bg-islamic-green-950/40 border-white/5'
             : 'bg-white/90 border-islamic-green-900/10 shadow-sm'
@@ -136,7 +136,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.02 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="max-w-2xl mx-auto px-5 py-6"
+            className="w-full max-w-400 mx-auto px-3 sm:px-5 lg:px-8 xl:px-12 2xl:px-16 py-4 sm:py-6"
           >
             {children}
           </motion.div>
@@ -150,7 +150,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
         onClick={() => setActiveTab('chat')}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className={`fixed bottom-28 right-6 z-50 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 group overflow-hidden glow-on-click ${
+        className={`fixed bottom-24 sm:bottom-28 right-4 sm:right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-2xl border-4 group overflow-hidden glow-on-click ${
           isDarkMode
             ? 'bg-gold-500 shadow-gold-500/40 border-islamic-green-950'
             : 'bg-amber-400 shadow-amber-500/35 border-white'
@@ -178,7 +178,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
 
       {/* Bottom Navigation */}
       <nav
-        className={`fixed bottom-6 left-6 right-6 z-50 backdrop-blur-2xl border rounded-[2.5rem] px-4 py-3 shadow-2xl ${
+        className={`fixed bottom-4 sm:bottom-6 left-3 sm:left-6 right-3 sm:right-6 z-50 backdrop-blur-2xl border rounded-4xl sm:rounded-[2.5rem] px-2 sm:px-4 py-2.5 sm:py-3 shadow-2xl ${
           isDarkMode
             ? 'bg-islamic-green-900/80 border-white/10'
             : 'bg-white/95 border-islamic-green-900/15 shadow-islamic-green-900/10'

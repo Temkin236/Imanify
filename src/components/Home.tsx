@@ -120,10 +120,10 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
   const nextPrayerTime = snapshot?.prayerData.nextPrayer.time || '--:--';
 
   return (
-    <div className="space-y-8 pb-10">
-      <section className="flex justify-between items-start px-2 relative z-10">
+    <div className="space-y-6 sm:space-y-8 pb-10">
+      <section className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-1 sm:px-2 relative z-10">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-2">
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">{greeting.text}</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">{greeting.text}</h2>
           <p className="text-gold-400 text-sm md:text-base font-medium tracking-wide">{greeting.sub}</p>
         </motion.div>
 
@@ -147,7 +147,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
         </div>
       )}
 
-      <section className="px-2">
+      <section className="px-0 sm:px-2">
         <motion.button
           whileHover={{ y: -2 }}
           onClick={() => setActiveTab('quran')}
@@ -172,7 +172,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
       <section>
         <button
           onClick={() => setShowReturnModal(true)}
-          className="w-full group relative overflow-hidden bg-linear-to-r from-islamic-green-800/40 to-islamic-green-900/40 p-6 rounded-[2.5rem] border border-white/10 flex items-center justify-between transition-all hover:bg-islamic-green-800/60"
+          className="w-full group relative overflow-hidden bg-linear-to-r from-islamic-green-800/40 to-islamic-green-900/40 p-4 sm:p-6 rounded-4xl sm:rounded-[2.5rem] border border-white/10 flex items-center justify-between transition-all hover:bg-islamic-green-800/60"
         >
           <div className="flex items-center gap-4 relative z-10">
             <div className="w-12 h-12 bg-gold-500/20 rounded-full flex items-center justify-center text-gold-400 group-hover:rotate-12 transition-transform">
@@ -192,7 +192,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
         </button>
       </section>
 
-      <section className="bg-linear-to-br from-islamic-green-800 to-islamic-green-900 rounded-[2.8rem] p-8 shadow-2xl border border-white/10 relative overflow-hidden">
+      <section className="bg-linear-to-br from-islamic-green-800 to-islamic-green-900 rounded-4xl sm:rounded-[2.8rem] p-5 sm:p-8 shadow-2xl border border-white/10 relative overflow-hidden">
         {loading ? (
           <div className="text-center py-10 flex flex-col items-center gap-4">
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
@@ -202,20 +202,20 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
           </div>
         ) : (
           <div className="relative z-10 flex flex-col gap-7">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+              <div className="flex items-center gap-3 min-w-0">
                 <div className="p-2.5 bg-gold-500/20 rounded-2xl text-gold-400">
                   <Timer size={22} />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h3 className="font-bold text-xl tracking-tight">{isRamadanMode ? 'Iftar Countdown' : `${nextPrayerName} Countdown`}</h3>
-                  <p className="text-gold-400/70 text-sm">{snapshot?.weather.weatherText || 'Calm weather'} in {snapshot?.weather.city || 'your city'}</p>
+                  <p className="text-gold-400/70 text-sm truncate">{snapshot?.weather.weatherText || 'Calm weather'} in {snapshot?.weather.city || 'your city'}</p>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsFasted(!isFasted)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl border transition-all ${
+                className={`self-start sm:self-auto flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl border transition-all ${
                   isFasted ? 'bg-gold-500 border-gold-500 text-islamic-green-950' : 'bg-white/10 border-white/20 text-white/70'
                 }`}
               >
@@ -225,7 +225,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
             </div>
 
             <div className="flex flex-col items-center gap-2 py-3">
-              <motion.span key={countdown.formatted} initial={{ scale: 0.98 }} animate={{ scale: 1 }} className="text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white to-white/50">
+              <motion.span key={countdown.formatted} initial={{ scale: 0.98 }} animate={{ scale: 1 }} className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white to-white/50">
                 {countdown.formatted}
               </motion.span>
               <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.35em]">
@@ -241,17 +241,17 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
               <p className="text-gold-300/80 text-xs font-semibold">{snapshot?.reminder.source || 'Daily reminder'}</p>
             </div>
 
-            <div className="flex justify-between items-center bg-white/10 p-5 rounded-4xl border border-white/10">
-              <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white/10 p-4 sm:p-5 rounded-4xl border border-white/10">
+              <div className="flex items-center gap-4 min-w-0">
                 <div className="w-12 h-12 bg-gold-500/10 rounded-2xl flex items-center justify-center text-gold-400">
                   <Sunset size={24} />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Next Prayer Time</p>
                   <p className="font-bold text-lg">{nextPrayerName} • {nextPrayerTime}</p>
                 </div>
               </div>
-              <button className="p-4 bg-white/10 rounded-2xl text-white/50 hover:text-gold-400 transition-colors">
+              <button className="self-start sm:self-auto p-4 bg-white/10 rounded-2xl text-white/50 hover:text-gold-400 transition-colors">
                 <Volume2 size={24} />
               </button>
             </div>
@@ -263,7 +263,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-5">
+      <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         <div className="bg-white/5 rounded-[2.2rem] p-6 border border-white/10 flex flex-col gap-4 hover:bg-white/10 transition-colors">
           <div className="flex justify-between items-start">
             <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400">
@@ -295,29 +295,29 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
         </div>
       </section>
 
-      <section className="bg-white/5 rounded-[2.5rem] p-7 border border-white/10 flex items-center justify-between group">
-        <div className="flex items-center gap-5">
+      <section className="bg-white/5 rounded-4xl sm:rounded-[2.5rem] p-5 sm:p-7 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+        <div className="flex items-center gap-4 sm:gap-5 min-w-0">
           <div className="relative w-16 h-16 flex items-center justify-center">
             <div className="absolute inset-0 border-2 border-dashed border-white/15 rounded-full animate-[spin_20s_linear_infinite]" />
             <Compass size={32} className="text-gold-400 group-hover:rotate-45 transition-transform duration-700" />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <MapPin size={12} className="text-gold-400" />
-              <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
+              <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest truncate">
                 {snapshot?.weather.city || 'Addis Ababa'}, {snapshot?.weather.country || 'ET'}
               </span>
             </div>
-            <h3 className="font-bold text-lg tracking-tight">{snapshot?.weather.temperatureC ?? '--'}°C • {snapshot?.weather.weatherText || 'Weather unavailable'}</h3>
-            <p className="text-gold-400/70 text-sm">{snapshot?.event?.label || 'No major event today'} {snapshot?.event ? `• ${snapshot.event.date} ${snapshot.hijri.hijriMonthEn}` : ''}</p>
+            <h3 className="font-bold text-lg tracking-tight truncate">{snapshot?.weather.temperatureC ?? '--'}°C • {snapshot?.weather.weatherText || 'Weather unavailable'}</h3>
+            <p className="text-gold-400/70 text-sm truncate">{snapshot?.event?.label || 'No major event today'} {snapshot?.event ? `• ${snapshot.event.date} ${snapshot.hijri.hijriMonthEn}` : ''}</p>
           </div>
         </div>
-        <button onClick={() => setActiveTab('calendar')} className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-white/40 hover:text-gold-400 hover:bg-white/15 transition-all">
+        <button onClick={() => setActiveTab('calendar')} className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-white/40 hover:text-gold-400 hover:bg-white/15 transition-all self-start sm:self-auto">
           <Calendar size={20} />
         </button>
       </section>
 
-      <section className="bg-islamic-green-900/50 rounded-[2.8rem] p-8 md:p-10 border border-white/10 relative overflow-hidden shadow-2xl">
+      <section className="bg-islamic-green-900/50 rounded-4xl sm:rounded-[2.8rem] p-5 sm:p-8 md:p-10 border border-white/10 relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-gold-500/30 to-transparent" />
         <div className="flex items-center gap-3 mb-7">
           <div className="w-10 h-10 bg-gold-500/10 rounded-2xl flex items-center justify-center text-gold-400">
@@ -332,7 +332,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
         </div>
 
         <div className="space-y-6">
-          <p className="arabic-text text-3xl md:text-4xl leading-loose text-right text-white/95">
+          <p className="arabic-text text-2xl sm:text-3xl md:text-4xl leading-loose text-right text-white/95 wrap-break-word">
             {snapshot?.dailyAyah.arabic || '...'}
           </p>
 
@@ -348,13 +348,13 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
       <section className="space-y-4">
         <div className="flex items-center justify-between px-2">
           <div>
-            <h3 className="font-black text-2xl tracking-tight">How is your heart?</h3>
+            <h3 className="font-black text-xl sm:text-2xl tracking-tight">How is your heart?</h3>
             <p className="text-gold-400/70 text-sm">Choose a mood and get a relevant Islamic response.</p>
           </div>
           <CloudSun size={20} className="text-gold-400/60" />
         </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-4 px-1 no-scrollbar">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {[
             { label: 'Anxious', icon: '😟', prompt: 'I feel anxious, suggest a dua for calmness based on my current day.' },
             { label: 'Grateful', icon: '🤲', prompt: 'I feel grateful, give me a short shukr dua and one ayah to reflect on.' },
@@ -367,9 +367,9 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
                 localStorage.setItem('imanify_chat_prefill', mood.prompt);
                 setActiveTab('chat');
               }}
-              className="flex flex-col items-center gap-3 p-6 bg-white/5 border border-white/10 rounded-4xl min-w-30 hover:bg-white/10 transition-all hover:border-gold-500/30"
+              className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 bg-white/5 border border-white/10 rounded-4xl hover:bg-white/10 transition-all hover:border-gold-500/30"
             >
-              <span className="text-3xl">{mood.icon}</span>
+              <span className="text-2xl sm:text-3xl">{mood.icon}</span>
               <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest">{mood.label}</span>
             </button>
           ))}

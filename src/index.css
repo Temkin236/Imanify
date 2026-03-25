@@ -18,6 +18,13 @@
 }
 
 @layer base {
+  html,
+  body,
+  #root {
+    width: 100%;
+    min-height: 100%;
+  }
+
   body {
     @apply bg-islamic-green-950 text-white font-sans antialiased;
     background: linear-gradient(180deg, #0F3D2E 0%, #071A13 100%);
