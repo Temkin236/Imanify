@@ -13,15 +13,19 @@ import {
   ChevronRight,
   Timer,
   CheckCircle2,
+  Circle,
   TrendingUp,
   Volume2,
   Sparkles,
   Compass,
   MapPin,
   RefreshCw,
-  ArrowRight
+  ArrowRight,
+  Zap,
+  AlertCircle
 } from 'lucide-react';
 import { PRAYER_TIMES } from '../constants';
+import { getTodayPrayerTimes, PrayerData, TimeUntil } from '../services/prayerService';
 
 interface HomeProps {
   setActiveTab: (tab: string) => void;
@@ -30,10 +34,75 @@ interface HomeProps {
 
 export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
   const [isFasted, setIsFasted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState('02:45:12');
+  const [timeUntilPrayer, setTimeUntilPrayer] = useState<TimeUntil>({
+    hours: 2,
+    minutes: 45,
+    seconds: 12,
+    formatted: '02:45:12',
+  });
+  const [prayerData, setPrayerData] = useState<PrayerData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [greeting, setGreeting] = useState({ text: 'Assalamu Alaikum', sub: 'Your Daily Deen Companion 🌙' });
   const [showReturnModal, setShowReturnModal] = useState(false);
 
+  // Fetch prayer times on mount
+  useEffect(() => {
+    const fetchPrayers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getTodayPrayerTimes('Addis Ababa', 'Ethiopia');
+        setPrayerData(data);
+        
+        // Check if data is fallback (error occurred but handled gracefully)
+        if (data.nextPrayer.reward === '⚠️') {
+          setError('Prayer times unavailable - using default times');
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching prayer times:', err);
+        setError('Unable to load prayer times');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrayers();
+  }, []);
+
+  // Update countdown timer every second (only if Ramadan)
+  useEffect(() => {
+    if (!isRamadanMode) return;
+
+    const interval = setInterval(() => {
+      if (prayerData) {
+        const now = new Date();
+        const [maghribHour, maghribMin] = prayerData.maghrib.split(':').map(Number);
+        const maghribTime = new Date();
+        maghribTime.setHours(maghribHour, maghribMin, 0);
+
+        let diff = maghribTime.getTime() - now.getTime();
+        if (diff < 0) {
+          diff += 24 * 60 * 60 * 1000; // Next day
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        setTimeUntilPrayer({
+          hours,
+          minutes,
+          seconds,
+          formatted: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [prayerData, isRamadanMode]);
+
+  // Update greeting based on time
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) {
@@ -125,51 +194,88 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
       {isRamadanMode && (
         <section className="bg-gradient-to-br from-islamic-green-800 to-islamic-green-900 rounded-[2.8rem] p-8 shadow-2xl border border-white/5 relative overflow-hidden group card-variation-1">
           <div className="relative z-10 flex flex-col gap-8">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gold-500/20 rounded-2xl text-gold-400">
-                  <Timer size={22} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-xl tracking-tight">Iftar Countdown</h3>
-                  <p className="accent-font text-gold-400/60 text-sm">Another chance to grow closer tonight ✨</p>
-                </div>
+            {/* Loading State */}
+            {loading && (
+              <div className="text-center py-8 flex flex-col items-center gap-4">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                >
+                  <RefreshCw className="text-gold-400" size={32} />
+                </motion.div>
+                <p className="text-white/60 text-sm">Loading prayer times...</p>
               </div>
-              <button 
-                onClick={() => setIsFasted(!isFasted)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl border transition-all shadow-lg ${isFasted ? 'bg-gold-500 border-gold-500 text-islamic-green-950' : 'bg-white/5 border-white/10 text-white/60'}`}
-              >
-                <CheckCircle2 size={16} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">{isFasted ? 'Fasted' : 'Fast Today?'}</span>
-              </button>
-            </div>
+            )}
 
-            <div className="flex flex-col items-center gap-2 py-4">
-              <motion.span 
-                key={timeLeft}
-                initial={{ scale: 0.95, opacity: 0.8 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40"
-              >
-                {timeLeft}
-              </motion.span>
-              <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.4em]">Until Maghrib</span>
-            </div>
-
-            <div className="flex justify-between items-center bg-white/5 p-5 rounded-[2rem] border border-white/5 backdrop-blur-sm">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gold-500/10 rounded-2xl flex items-center justify-center text-gold-400">
-                  <Sunset size={24} />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Maghrib Today</p>
-                  <p className="font-bold text-lg">18:45 PM</p>
-                </div>
+            {/* Error State */}
+            {error && !loading && (
+              <div className="text-center py-6">
+                <AlertCircle className="text-red-400 mx-auto mb-2" size={24} />
+                <p className="text-red-300 text-sm">{error}</p>
               </div>
-              <button className="p-4 bg-white/5 rounded-2xl text-white/40 hover:text-gold-400 transition-colors">
-                <Volume2 size={24} />
-              </button>
-            </div>
+            )}
+
+            {/* Success State - Display Prayer Data */}
+            {!loading && prayerData && (
+              <>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-gold-500/20 rounded-2xl text-gold-400">
+                      <Timer size={22} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-xl tracking-tight">Iftar Countdown</h3>
+                      <p className="accent-font text-gold-400/60 text-sm">Another chance to grow closer tonight ✨</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setIsFasted(!isFasted)}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl border transition-all shadow-lg ${isFasted ? 'bg-gold-500 border-gold-500 text-islamic-green-950' : 'bg-white/5 border-white/10 text-white/60'}`}
+                  >
+                    {isFasted ? <CheckCircle2 size={16} /> : <Circle size={16} />}
+                    <span className="text-[10px] font-bold uppercase tracking-widest">{isFasted ? 'Fasted' : 'Fast Today?'}</span>
+                  </button>
+                </div>
+
+                <div className="flex flex-col items-center gap-2 py-4">
+                  <motion.span 
+                    key={timeUntilPrayer.formatted}
+                    initial={{ scale: 0.95, opacity: 0.8 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40"
+                  >
+                    {timeUntilPrayer.formatted}
+                  </motion.span>
+                  <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.4em]">Until Maghrib</span>
+                </div>
+
+                {/* Sunnah Quote Section */}
+                {prayerData.nextPrayer && (
+                  <div className="bg-black/20 rounded-lg p-4 border border-gold-500/20">
+                    <p className="text-[10px] font-bold text-gold-400 mb-2 uppercase tracking-wider flex items-center gap-1">
+                      <Sparkles size={12} /> Sunnah Reminder
+                    </p>
+                    <p className="text-white/80 text-sm italic mb-2">"{prayerData.nextPrayer.sunnahQuote}"</p>
+                    <p className="text-gold-400/70 text-xs font-semibold">{prayerData.nextPrayer.reward}</p>
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center bg-white/5 p-5 rounded-[2rem] border border-white/5 backdrop-blur-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gold-500/10 rounded-2xl flex items-center justify-center text-gold-400">
+                      <Sunset size={24} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Maghrib Today (Iftar)</p>
+                      <p className="font-bold text-lg">{prayerData.maghrib}</p>
+                    </div>
+                  </div>
+                  <button className="p-4 bg-white/5 rounded-2xl text-white/40 hover:text-gold-400 transition-colors">
+                    <Volume2 size={24} />
+                  </button>
+                </div>
+              </>
+            )}
           </div>
           
           {/* Subtle Background Pattern */}
