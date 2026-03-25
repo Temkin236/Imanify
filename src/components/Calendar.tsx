@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Moon, Star, Sparkles } from 'lucide-react';
 import { IslamicCalendarCard } from './IslamicCalendarCard';
 import { getHijriDate, HijriDateData } from '../services/hijriService';
+import { getMonthlyIslamicEvents, IslamicEvent } from '../services/islamicEventsService';
 
 // Multi-language day names
 const DAY_NAMES = {
@@ -112,10 +113,15 @@ export const Calendar: React.FC = () => {
 
   const monthName = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-  const events = [
-    { date: 27, label: 'Laylatul Qadr', icon: Sparkles, color: 'text-indigo-400 bg-indigo-500/10' },
-    { date: 15, label: 'Mid-Month Blessings', icon: Moon, color: 'text-gold-400 bg-gold-500/10' },
-  ];
+  // Get Islamic events for the current Hijri month - extract month number from hijriData
+  const hijriMonthNumber = hijriData?.hijriMonthNumber || 1; // Default to Muharram if not loaded
+  const events: IslamicEvent[] = getMonthlyIslamicEvents(hijriMonthNumber);
+  
+  // Sort events by date and show only upcoming ones
+  const upcomingEvents = events
+    .filter(e => e.date >= (hijriData?.hijriDay || 1))
+    .sort((a, b) => a.date - b.date)
+    .slice(0, 5); // Show top 5 upcoming events
 
   return (
     <div className="space-y-8 pb-20">
@@ -287,26 +293,56 @@ export const Calendar: React.FC = () => {
           <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">This Month</span>
         </div>
         <div className="space-y-4 px-2">
-          {events.map((event, i) => (
-            <motion.div 
-              key={i}
-              whileHover={{ x: 5 }}
-              className="flex items-center justify-between p-6 bg-white/5 rounded-[2rem] border border-white/5 group hover:bg-white/10 transition-all"
-            >
-              <div className="flex items-center gap-5">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${event.color} border border-white/5 group-hover:rotate-6 transition-transform`}>
-                  <event.icon size={24} />
+          {upcomingEvents.length > 0 ? (
+            upcomingEvents.map((event, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ x: 5 }}
+                className={`p-6 rounded-[2rem] border group hover:bg-white/10 transition-all cursor-pointer ${event.color.replace('text-', 'border-').split(' ').join(' bg-opacity-5 ')}`}
+              >
+                <div className="flex items-start gap-5 mb-4">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${event.color} border border-white/5 group-hover:rotate-6 transition-transform flex-shrink-0`}>
+                    <event.icon size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="font-bold text-lg tracking-tight">{event.label}</h4>
+                        <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">{hijriData?.hijriMonthEn} {event.date}, {hijriData?.hijriYear} AH</p>
+                      </div>
+                      <ChevronRight size={18} className="text-white/20 group-hover:text-gold-400 transition-colors" />
+                    </div>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <h4 className="font-bold text-lg tracking-tight">{event.label}</h4>
-                  <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">{hijriData?.hijriMonthEn} {event.date}, {hijriData?.hijriYear} AH</p>
+
+                {/* Description & Sunnah Info */}
+                <div className="space-y-3 ml-0">
+                  <p className="text-sm text-white/70 leading-relaxed">{event.description}</p>
+                  
+                  {/* Sunnah Tip */}
+                  <div className="bg-black/20 rounded-lg p-3 border border-white/5">
+                    <p className="text-[10px] font-bold text-gold-400 mb-1 uppercase tracking-wider">💡 Sunnah Tip</p>
+                    <p className="text-xs text-white/60">{event.sunnah_tip}</p>
+                  </div>
+
+                  {/* Reward */}
+                  {event.reward && (
+                    <div className="flex items-center gap-2 text-xs pt-2">
+                      <span className="text-lg">{event.reward.split(' ')[0]}</span>
+                      <span className="text-white/70">{event.reward.substring(2)}</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="p-3 bg-white/5 rounded-xl text-white/20 group-hover:text-gold-400 transition-colors">
-                <ChevronRight size={18} />
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-white/40">
+              <p className="text-sm">No upcoming events this month</p>
+            </div>
+          )}
         </div>
       </section>
 

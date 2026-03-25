@@ -7,6 +7,7 @@ export interface HijriDateData {
   hijriDay: number;
   hijriMonthEn: string;
   hijriMonthAr: string;
+  hijriMonthNumber: number; // Month number 1-12 for event matching
   hijriYear: number;
   gregorianDate: string; // DD-MM-YYYY format
   isRamadan: boolean;
@@ -112,6 +113,7 @@ export async function getHijriDate(date: Date | string): Promise<HijriDateData> 
       hijriDay: parseInt(hijri.day, 10),
       hijriMonthEn: hijri.month.en,
       hijriMonthAr: hijri.month.ar,
+      hijriMonthNumber: hijri.month.number,
       hijriYear: parseInt(hijri.year, 10),
       gregorianDate: gregorian.format,
       isRamadan,

@@ -63,16 +63,21 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
       {/* Header */}
       <header className="sticky top-0 z-50 px-6 py-4 flex items-center justify-between backdrop-blur-xl bg-islamic-green-950/40 border-b border-white/5">
         <div className="flex items-center gap-3" onClick={() => setActiveTab('home')}>
-          <div className="w-12 h-12 bg-islamic-green-900 border border-gold-500/30 rounded-2xl flex items-center justify-center shadow-lg shadow-gold-500/10 relative group cursor-pointer overflow-hidden">
-            <div className="absolute inset-0 bg-gold-500/5 group-hover:bg-gold-500/10 transition-colors" />
-            <div className="relative flex items-center justify-center">
-              <Moon size={24} className={`text-gold-500 absolute -top-1 -right-1 rotate-12 transition-transform duration-1000 ${isRamadanMode ? 'scale-110' : 'scale-100'}`} fill="currentColor" />
-              <BookOpen size={20} className="text-gold-400 relative z-10" />
-            </div>
+          <div
+            className={`w-11 h-11 flex items-center justify-center rounded-full border shadow-sm cursor-pointer transition-colors ${
+              isDarkMode
+                ? 'bg-islamic-green-900 border-gold-500/40'
+                : 'bg-amber-50 border-amber-300'
+            }`}
+          >
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
+              <path d="M22.5 7.5A9.5 9.5 0 1 0 22.5 24A8 8 0 1 1 22.5 7.5Z" fill="#D4A017" />
+            </svg>
           </div>
           <div className="flex flex-col">
-            <h1 className="text-2xl font-bold tracking-tight leading-none italic accent-font text-gold-400">Imanify</h1>
-            <span className="arabic-text text-[10px] text-white/40 leading-none mt-1 tracking-widest">إيمَانِፍአይ</span>
+            <h1 className={`text-2xl font-bold leading-none tracking-tight ${isDarkMode ? 'text-gold-400' : 'text-amber-700'}`}>
+              Imanify
+            </h1>
           </div>
         </div>
         
