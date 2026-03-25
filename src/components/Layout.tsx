@@ -92,18 +92,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
         </div>
         
         <div className="flex items-center gap-3">
-          {isRamadanMode && (
-            <button 
-              onClick={() => setActiveTab('ramadan')}
-              className={`p-2.5 rounded-2xl transition-all border ${
-                isDarkMode
-                  ? 'bg-gold-500/10 hover:bg-gold-500/20 border-gold-500/20 text-gold-400'
-                  : 'bg-amber-100 hover:bg-amber-200 border-amber-300 text-amber-700'
-              }`}
-            >
-              <Moon size={20} fill="currentColor" />
-            </button>
-          )}
           <button 
             onClick={() => setActiveTab('settings')}
             className={`p-2.5 rounded-2xl transition-all border ${
