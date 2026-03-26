@@ -14,6 +14,7 @@ import {
   Sparkles,
   Calendar
 } from 'lucide-react';
+import PWAInstallButton from './PWAInstallButton';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -163,6 +164,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
           />
         </div>
       </motion.button>
+
+      {/* PWA Install Button */}
+      <PWAInstallButton />
 
       {/* Bottom Navigation */}
       <nav
