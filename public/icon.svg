@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="#0F3D2E"/>
+  
+  <!-- Golden crescent moon -->
+  <path d="M 256 80 A 150 150 0 0 1 380 150 A 150 150 0 0 1 380 360 A 150 150 0 0 1 256 430 A 150 150 0 0 1 132 360 L 150 360 A 130 130 0 0 0 256 410 A 130 130 0 0 0 360 150 A 130 130 0 0 0 256 100 L 256 80 Z" fill="#D4AF37"/>
+  
+  <!-- Star -->
+  <g transform="translate(180, 140)">
+    <polygon points="10,0 12.5,8.5 21.5,8.5 15,13.5 17.5,22 10,17 2.5,22 5,13.5 -1.5,8.5 7.5,8.5" fill="#D4AF37"/>
+  </g>
+</svg>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Download, X, Chrome, Firefox, Apple } from 'lucide-react';
+import { Download, X, Chrome, Flame, Apple } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -141,7 +141,7 @@ export const PWAInstallButton = () => {
             {/* Firefox */}
             <div className="bg-white/10 rounded-xl p-3 border border-white/20">
               <div className="flex items-center gap-2 mb-2 font-semibold text-sm">
-                <Firefox size={18} className="text-orange-300" />
+                <Flame size={18} className="text-orange-300" />
                 Firefox
               </div>
               <p className="text-emerald-100 text-sm leading-relaxed">
