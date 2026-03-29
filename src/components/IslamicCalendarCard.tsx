@@ -34,7 +34,7 @@ export function IslamicCalendarCard({ date = new Date(), showPrayerTime = false 
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8 bg-gradient-to-br from-islamic-green-900 to-islamic-green-950 rounded-[2.5rem] border border-gold-500/10 shadow-lg">
+      <div className="flex items-center justify-center p-8 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 rounded-[2.5rem] border border-white/5 shadow-lg">
         <Loader className="animate-spin text-gold-500" size={24} />
       </div>
     );
@@ -42,7 +42,7 @@ export function IslamicCalendarCard({ date = new Date(), showPrayerTime = false 
 
   if (error) {
     return (
-      <div className="p-6 bg-gradient-to-br from-islamic-green-900 to-islamic-green-950 rounded-[2.5rem] border border-red-500/20 shadow-lg">
+      <div className="p-6 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 rounded-[2.5rem] border border-white/5 shadow-lg">
         <div className="flex gap-3 items-start">
           <AlertCircle className="text-red-500 shrink-0 mt-1" size={20} />
           <div>
@@ -71,10 +71,10 @@ export function IslamicCalendarCard({ date = new Date(), showPrayerTime = false 
     <div
       className={`relative overflow-hidden rounded-[2.5rem] border shadow-xl transition-all duration-300 ${
         hijriData.isRamadan
-          ? 'border-gold-500/30 bg-gradient-to-br from-gold-500/10 via-islamic-green-900 to-islamic-green-950'
+          ? 'border-white/5 bg-gradient-to-br from-gold-500/10 via-islamic-green-800/40 to-islamic-green-900/40'
           : hijriData.isFriday
-            ? 'border-gold-500/20 bg-gradient-to-br from-islamic-green-800 via-islamic-green-900 to-islamic-green-950'
-            : 'border-gold-500/10 bg-gradient-to-br from-islamic-green-900 to-islamic-green-950'
+            ? 'border-white/5 bg-gradient-to-br from-islamic-green-800/40 via-islamic-green-900/40 to-islamic-green-900/40'
+            : 'border-white/5 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40'
       }`}
     >
       {/* Decorative corner accent */}
