@@ -1,8 +1,3 @@
-/**
- * Prayer Times Service
- * Fetches real prayer times from Aladhan API and provides Sunnah-based reminders
- */
-
 export interface PrayerTimes {
   fajr: string;
   sunrise: string;
@@ -42,7 +37,6 @@ export interface PrayerData extends PrayerTimes {
   isRamadan: boolean;
 }
 
-// Sunnah quotes and rewards for each prayer
 const SUNNAH_DATA: Record<string, { quote: string; quoteAr: string; reward: string }> = {
   fajr: {
     quote:
@@ -88,63 +82,46 @@ const SUNNAH_DATA: Record<string, { quote: string; quoteAr: string; reward: stri
   },
 };
 
-// Cache for prayer times
 const cache = new Map<string, { data: PrayerData; timestamp: number }>();
-const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+const CACHE_TTL = 60 * 60 * 1000;
 
-/**
- * Fetch prayer times from Aladhan API for a given location and date
- */
 export async function getPrayerTimes(
   date: Date,
   city: string = 'Addis Ababa', // Default to Addis Ababa
   country: string = 'Ethiopia'
 ): Promise<PrayerData> {
   try {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const dateStr = `${day}-${month}-${year}`;
     const cacheKey = `${city}-${date.toDateString()}`;
 
-    // Check cache
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
       return cached.data;
     }
 
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const dateStr = `${day}-${month}-${year}`;
-
-    // Fetch from Aladhan API with proper URL encoding
     const encodedCity = encodeURIComponent(city);
     const encodedCountry = encodeURIComponent(country);
     const apiUrl = `https://api.aladhan.com/v1/timingsByCity?city=${encodedCity}&country=${encodedCountry}&date=${dateStr}&method=2`;
-    console.log('Fetching from:', apiUrl);
-    
     const response = await fetch(apiUrl);
 
     if (!response.ok) {
-      console.error(`Aladhan API HTTP error: ${response.status}`, response);
       throw new Error(`Aladhan API error: ${response.status}`);
     }
 
     const apiData: any = await response.json();
-    console.log('Aladhan API Response:', apiData);
-
     if (!apiData || apiData.code !== 200) {
-      console.error(`API error code: ${apiData?.code}`, apiData);
       throw new Error(`API error: ${apiData?.status || 'Unknown error'}`);
     }
-
-    // Validate response structure
     if (!apiData.data || !apiData.data.timings) {
-      console.warn('Unexpected Aladhan response structure:', apiData);
       throw new Error('Invalid response structure from Aladhan API');
     }
 
     const timings = apiData.data.timings;
     const hijri = apiData.data.hijri || {};
 
-    // Check if Ramadan - with safe fallback
     const isRamadan = hijri?.month?.number === 9 || false;
 
     const prayerData: PrayerData = {
@@ -166,13 +143,11 @@ export async function getPrayerTimes(
       nextPrayer: calculateNextPrayer(timings, isRamadan),
       isRamadan,
     };
-
-    // Cache the result
     cache.set(cacheKey, { data: prayerData, timestamp: Date.now() });
 
     return prayerData;
   } catch (error) {
-    console.error('Error fetching prayer times:', error);
+
     
     // Return sensible fallback data instead of crashing
     const fallbackData: PrayerData = {
@@ -202,16 +177,12 @@ export async function getPrayerTimes(
       isRamadan: false,
     };
 
-    // Cache even the fallback so we don't spam the API
     cache.set(cacheKey, { data: fallbackData, timestamp: Date.now() });
     
     return fallbackData;
   }
 }
 
-/**
- * Get today's prayer times
- */
 export async function getTodayPrayerTimes(
   city: string = 'Addis Ababa',
   country: string = 'Ethiopia'
@@ -219,20 +190,14 @@ export async function getTodayPrayerTimes(
   return getPrayerTimes(new Date(), city, country);
 }
 
-/**
- * Format time from API format (HH:MM) to standard format
- */
 function formatTime(time: string): string {
   if (!time || time.includes('N/A')) return '--:--';
   return time.split(' ')[0]; // Remove any extra text
 }
 
-/**
- * Calculate next prayer and time until it
- */
 function calculateNextPrayer(timings: Record<string, string>, isRamadan: boolean): NextPrayer {
   const now = new Date();
-  const currentTime = now.getHours() * 60 + now.getMinutes(); // Current time in minutes
+  const currentTime = now.getHours() * 60 + now.getMinutes();
 
   const prayers = [
     { name: 'Fajr', time: timings.Fajr },
@@ -243,14 +208,11 @@ function calculateNextPrayer(timings: Record<string, string>, isRamadan: boolean
   ];
 
   if (isRamadan) {
-    // Add Iftar (Maghrib) as special prayer during Ramadan
     const maghribIndex = prayers.findIndex(p => p.name === 'Maghrib');
-    if (maghribIndex !== -1) {
-      prayers[maghribIndex] = { name: 'Iftar (Maghrib)', time: timings.Maghrib };
-    }
+    if (maghribIndex !== -1) prayers[maghribIndex] = { name: 'Iftar (Maghrib)', time: timings.Maghrib };
   }
 
-  let nextPrayer = prayers[0]; // Default to Fajr
+  let nextPrayer = prayers[0];
   let minTimeDiff = Infinity;
 
   for (const prayer of prayers) {
@@ -258,9 +220,7 @@ function calculateNextPrayer(timings: Record<string, string>, isRamadan: boolean
     const prayerTime = prayerHour * 60 + prayerMinute;
     let timeDiff = prayerTime - currentTime;
 
-    if (timeDiff < 0) {
-      timeDiff += 24 * 60; // Next day if time passed
-    }
+    if (timeDiff < 0) timeDiff += 24 * 60;
 
     if (timeDiff < minTimeDiff) {
       minTimeDiff = timeDiff;
@@ -283,9 +243,6 @@ function calculateNextPrayer(timings: Record<string, string>, isRamadan: boolean
   };
 }
 
-/**
- * Convert minutes to time format
- */
 function minutesToTimeFormat(minutes: number): TimeUntil {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;

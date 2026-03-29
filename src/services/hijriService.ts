@@ -1,8 +1,3 @@
-/**
- * Islamic (Hijri) Calendar Service
- * Provides utilities to fetch and convert Gregorian dates to Hijri dates using Aladhan API
- */
-
 export interface HijriDateData {
   hijriDay: number;
   hijriMonthEn: string;

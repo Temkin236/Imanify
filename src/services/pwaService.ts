@@ -1,50 +1,23 @@
-/**
- * PWA Service Worker Registration Utility
- * Handles service worker registration and offline detection
- */
-
 export async function initPWA() {
-  console.log('🔧 Initializing PWA...');
-
-  // Register service worker
   if ('serviceWorker' in navigator) {
     try {
-      console.log('📱 Registering service worker...');
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/',
-      });
+      const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
 
-      console.log('✅ Service Worker registered successfully:', registration);
+      setInterval(() => { registration.update(); }, 60000);
 
-      // Check for updates periodically
-      setInterval(() => {
-        registration.update();
-      }, 60000); // Check every minute
-
-      // Handle service worker updates
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New service worker available
-              console.log('🔄 New service worker version available');
+              navigator.serviceWorker.controller?.postMessage({ type: 'SKIP_WAITING' });
             }
           });
         }
       });
-
-      // Log controller info
-      if (navigator.serviceWorker.controller) {
-        console.log('✅ Service Worker is controlling the page');
-      } else {
-        console.log('⏳ Service Worker registered, will take control on next reload');
-      }
     } catch (error) {
-      console.error('❌ Service Worker registration failed:', error);
+      // Service Worker registration failed
     }
-  } else {
-    console.warn('⚠️ Service Workers not supported in this browser');
   }
 
   // Listen for online/offline events
@@ -70,59 +43,34 @@ export async function initPWA() {
   window.addEventListener('beforeinstallprompt', (e) => {
     console.log('📲 beforeinstallprompt event fired!', e);
   });
-
-  console.log('✅ PWA initialization complete');
 }
 
-/**
- * Check if app is running in standalone mode (installed as PWA)
- */
 export function isStandaloneMode(): boolean {
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-  if (isStandalone) {
-    console.log('📲 App running in standalone mode (installed PWA)');
-  }
-  return isStandalone;
+  return window.matchMedia('(display-mode: standalone)').matches;
 }
 
-/**
- * Get cache status information
- */
 export async function getCacheInfo() {
-  if (!('caches' in window)) {
-    return { available: false };
-  }
+  if (!('caches' in window)) return { available: false };
 
   try {
     const cacheNames = await caches.keys();
-    const caches_info = {};
-
+    const caches_info: Record<string, number> = {};
     for (const cacheName of cacheNames) {
       const cache = await caches.open(cacheName);
       const keys = await cache.keys();
-      (caches_info as any)[cacheName] = keys.length;
+      caches_info[cacheName] = keys.length;
     }
-
-    console.log('💾 Cache info:', caches_info);
     return { available: true, caches: caches_info };
-  } catch (error) {
-    console.error('Error getting cache info:', error);
+  } catch {
     return { available: false };
   }
 }
 
-/**
- * Clear all caches (useful for development)
- */
 export async function clearAllCaches() {
-  if (!('caches' in window)) {
-    return false;
-  }
-
+  if (!('caches' in window)) return false;
   try {
     const cacheNames = await caches.keys();
     await Promise.all(cacheNames.map((name) => caches.delete(name)));
-    console.log('🗑️ All caches cleared');
     return true;
   } catch (error) {
     console.error('Error clearing caches:', error);

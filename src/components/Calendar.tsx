@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Moon, Star, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, BookOpen, Save, Check } from 'lucide-react';
 import { IslamicCalendarCard } from './IslamicCalendarCard';
 import { getHijriDate, HijriDateData } from '../services/hijriService';
 import { getMonthlyIslamicEvents, IslamicEvent } from '../services/islamicEventsService';
 
-// Multi-language day names
+  // Multi-language day names
 const DAY_NAMES = {
   en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   ar: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
@@ -35,11 +35,21 @@ interface DayInfo {
   isRamadan?: boolean;
 }
 
+interface DayNote {
+  date: string;
+  note: string;
+}
+
 export const Calendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date(2026, 2, 25)); // March 25, 2026
   const [hijriData, setHijriData] = useState<HijriDateData | null>(null);
   const [daysData, setDaysData] = useState<Map<number, DayInfo>>(new Map());
   const [language, setLanguage] = useState<'en' | 'ar' | 'am'>('en');
+  const [selectedDay, setSelectedDay] = useState<number | null>(25);
+  const [dayNotes, setDayNotes] = useState<Map<string, DayNote>>(new Map());
+  const [noteSaved, setNoteSaved] = useState(false);
+  const [showAzkarToast, setShowAzkarToast] = useState(false);
+  const [showDuaToast, setShowDuaToast] = useState(false);
 
   // Fetch Hijri date when component mounts
   useEffect(() => {
@@ -121,253 +131,261 @@ export const Calendar: React.FC = () => {
   const upcomingEvents = events
     .filter(e => e.date >= (hijriData?.hijriDay || 1))
     .sort((a, b) => a.date - b.date)
-    .slice(0, 5); // Show top 5 upcoming events
+    .slice(0, 5);
+
+  // Get selected day info
+  const selectedDayDate = selectedDay ? new Date(currentDate.getFullYear(), currentDate.getMonth(), selectedDay) : null;
+  const dayDateKey = selectedDayDate ? selectedDayDate.toISOString().split('T')[0] : '';
+  const dayNote = dayNotes.get(dayDateKey) || { date: dayDateKey, note: '' };
+
+  const handleNoteChange = (text: string) => {
+    const updated = { date: dayDateKey, note: text };
+    setDayNotes(prev => new Map(prev).set(dayDateKey, updated));
+  };
+
+  const getGregorianDate = (day: number) => {
+    return new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  // Save note handler
+  const handleSaveNote = () => {
+    if (dayNote.note.trim()) {
+      // Save to localStorage
+      const allNotes = JSON.parse(localStorage.getItem('calendarNotes') || '{}');
+      allNotes[dayDateKey] = dayNote.note;
+      localStorage.setItem('calendarNotes', JSON.stringify(allNotes));
+      
+      // Show success feedback
+      setNoteSaved(true);
+      setTimeout(() => setNoteSaved(false), 2000);
+    }
+  };
+
+  // Load notes from localStorage on mount
+  useEffect(() => {
+    const savedNotes = JSON.parse(localStorage.getItem('calendarNotes') || '{}');
+    const notesMap = new Map<string, DayNote>();
+    Object.entries(savedNotes).forEach(([date, note]) => {
+      notesMap.set(date, { date, note: note as string });
+    });
+    setDayNotes(notesMap);
+  }, []);
+
+  // Azkar handler
+  const handleAzkar = () => {
+    setShowAzkarToast(true);
+    setTimeout(() => setShowAzkarToast(false), 3000);
+  };
+
+  // Dua handler
+  const handleDua = () => {
+    setShowDuaToast(true);
+    setTimeout(() => setShowDuaToast(false), 3000);
+  };
 
   return (
-    <div className="space-y-8 pb-20">
-      <header className="px-2 flex justify-between items-end">
+    <div className="space-y-4 pb-20">
+      {/* Header */}
+      <header className="px-2 flex justify-between items-center">
         <div>
-          <h2 className="text-4xl font-bold tracking-tight">Islamic Calendar</h2>
-          <p className="accent-font text-gold-400 text-xl">{hijriData?.hijriDay} {hijriData?.hijriMonthEn} {hijriData?.hijriYear} AH</p>
+          <h2 className="text-3xl font-bold">Hijri Calendar</h2>
+          <p className="text-xs text-gold-400">{hijriData?.hijriDay} {hijriData?.hijriMonthEn} {hijriData?.hijriYear} AH</p>
         </div>
-        <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-2xl border border-white/5">
-          <CalendarIcon size={16} className="text-gold-400" />
-          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{monthName}</span>
+        <div className="flex gap-1">
+          <button onClick={() => setLanguage('en')} className={`px-3 py-1 rounded text-xs font-bold transition-all ${language === 'en' ? 'bg-gold-500 text-islamic-green-950' : 'bg-white/5'}`}>EN</button>
+          <button onClick={() => setLanguage('ar')} className={`px-3 py-1 rounded text-xs font-bold transition-all ${language === 'ar' ? 'bg-gold-500 text-islamic-green-950' : 'bg-white/5'}`}>AR</button>
+          <button onClick={() => setLanguage('am')} className={`px-3 py-1 rounded text-xs font-bold transition-all ${language === 'am' ? 'bg-gold-500 text-islamic-green-950' : 'bg-white/5'}`}>AM</button>
         </div>
       </header>
 
-      {/* Islamic Calendar Card - Live Hijri Date */}
+      {/* Islamic Calendar Card */}
       <section className="px-2">
         <IslamicCalendarCard showPrayerTime={true} />
       </section>
 
-      {/* Language Toggle */}
-      <section className="px-2 flex gap-2">
-        <button
-          onClick={() => setLanguage('en')}
-          className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
-            language === 'en' ? 'bg-gold-500 text-islamic-green-950' : 'bg-white/5 text-white/60 hover:bg-white/10'
-          }`}
-        >
-          English
-        </button>
-        <button
-          onClick={() => setLanguage('ar')}
-          className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
-            language === 'ar' ? 'bg-gold-500 text-islamic-green-950' : 'bg-white/5 text-white/60 hover:bg-white/10'
-          }`}
-        >
-          العربية
-        </button>
-        <button
-          onClick={() => setLanguage('am')}
-          className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
-            language === 'am' ? 'bg-gold-500 text-islamic-green-950' : 'bg-white/5 text-white/60 hover:bg-white/10'
-          }`}
-        >
-          አማርኛ
-        </button>
-      </section>
-
-      {/* Calendar Grid */}
-      <section className="bg-gradient-to-br from-islamic-green-900/40 to-islamic-green-950/40 rounded-[2.5rem] p-8 border border-white/5 space-y-6">
-        {/* Header with navigation */}
-        <div className="flex items-center justify-between">
-          <motion.button 
-            whileHover={{ x: -4 }}
-            onClick={goToPrevMonth}
-            className="p-3 bg-white/5 rounded-2xl text-white/40 hover:text-gold-400 transition-colors border border-white/5"
-          >
-            <ChevronLeft size={20} />
-          </motion.button>
-          
-          <div className="text-center">
-            <h3 className="font-bold text-2xl tracking-tight">{hijriData?.hijriMonthAr || 'رمضان'}</h3>
-            <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mt-1">
-              {hijriData?.hijriYear} AH
-            </p>
-            <p className="text-xs text-white/30 mt-2">{monthName}</p>
+      {/* Two-Pane Split Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
+        {/* LEFT: Compact Calendar Grid */}
+        <section className="bg-gradient-to-br from-islamic-green-900/40 to-islamic-green-950/40 rounded-2xl p-4 border border-white/5 space-y-3 h-fit">
+          {/* Navigation */}
+          <div className="flex items-center justify-between">
+            <motion.button whileHover={{ x: -2 }} onClick={goToPrevMonth} className="p-2 bg-white/5 rounded-lg border border-white/5 hover:bg-white/10">
+              <ChevronLeft size={16} />
+            </motion.button>
+            <div className="text-center">
+              <h3 className="font-bold text-sm text-gold-400">{hijriData?.hijriMonthAr}</h3>
+              <p className="text-[9px] text-white/40">{hijriData?.hijriYear} AH</p>
+            </div>
+            <motion.button whileHover={{ x: 2 }} onClick={goToNextMonth} className="p-2 bg-white/5 rounded-lg border border-white/5 hover:bg-white/10">
+              <ChevronRight size={16} />
+            </motion.button>
           </div>
 
-          <motion.button 
-            whileHover={{ x: 4 }}
-            onClick={goToNextMonth}
-            className="p-3 bg-white/5 rounded-2xl text-white/40 hover:text-gold-400 transition-colors border border-white/5"
-          >
-            <ChevronRight size={20} />
-          </motion.button>
-        </div>
-
-        {/* Day names header - Multi-language */}
-        <div className="grid grid-cols-7 gap-2">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <div key={i} className="text-center p-3 bg-white/5 rounded-2xl border border-white/5">
-              <p className="text-xs font-bold text-gold-400 uppercase tracking-wider">
+          {/* Day abbreviations */}
+          <div className="grid grid-cols-7 gap-2">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className="text-center text-xs font-bold text-gold-400 uppercase tracking-widest">
                 {DAY_ABBR[language][i]}
-              </p>
-              <p className="text-[10px] text-white/40 mt-1">{DAY_NAMES[language][i]}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Calendar days grid */}
-        <div className="grid grid-cols-7 gap-2">
-          {days.map((day, i) => {
-            if (day === null) {
-              return <div key={`empty-${i}`} className="aspect-square" />;
-            }
-
-            const dayInfo = daysData.get(day);
-            const today = isToday(day);
-            const friday = dayInfo?.isFriday;
-            const ramadan = dayInfo?.isRamadan;
-            const event = events.find(e => e.date === day);
-
-            return (
-              <motion.button
-                key={day}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center transition-all border p-2 group ${
-                  today
-                    ? 'bg-gradient-to-br from-gold-500 to-gold-600 text-islamic-green-950 border-gold-400 shadow-lg shadow-gold-500/30'
-                    : friday
-                      ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 text-white hover:bg-emerald-500/30'
-                      : ramadan
-                        ? 'bg-gradient-to-br from-white/10 to-white/5 border-gold-500/20 text-white/90 hover:bg-white/15'
-                        : 'bg-white/5 border-white/5 text-white/50 hover:bg-white/10'
-                }`}
-              >
-                {/* Day number */}
-                <span className={`text-lg font-bold ${today ? 'text-islamic-green-950' : ''}`}>{day}</span>
-
-                {/* Hijri day info */}
-                {dayInfo?.hijriDay && (
-                  <span className={`text-[10px] font-semibold mt-0.5 ${today ? 'text-islamic-green-900/70' : 'text-white/50 group-hover:text-white/70'}`}>
-                    {dayInfo.hijriDay}
-                  </span>
-                )}
-
-                {/* Event indicator */}
-                {event && (
-                  <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center ${event.color} border border-white/20 shadow-lg`}>
-                    <event.icon size={8} />
-                  </div>
-                )}
-
-                {/* Friday indicator */}
-                {friday && !today && (
-                  <div className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full" />
-                )}
-
-                {/* Today indicator */}
-                {today && (
-                  <div className="absolute -bottom-1.5 w-1.5 h-1.5 bg-islamic-green-950 rounded-full" />
-                )}
-              </motion.button>
-            );
-          })}
-        </div>
-
-        {/* Legend */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-8 pt-6 border-t border-white/5">
-          <div className="flex items-center gap-2 text-sm">
-            <div className="w-3 h-3 rounded bg-gold-500" />
-            <span className="text-white/60">Today</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <div className="w-3 h-3 rounded bg-emerald-500/40 border border-emerald-500" />
-            <span className="text-white/60">Friday</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Star size={12} className="text-gold-400" />
-            <span className="text-white/60">Events</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Upcoming Events */}
-      <section className="space-y-5">
-        <div className="flex items-center justify-between px-4">
-          <h3 className="font-black text-2xl tracking-tight">Upcoming Events</h3>
-          <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">This Month</span>
-        </div>
-        <div className="space-y-4 px-2">
-          {upcomingEvents.length > 0 ? (
-            upcomingEvents.map((event, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ x: 5 }}
-                className={`p-6 rounded-[2rem] border group hover:bg-white/10 transition-all cursor-pointer ${event.color.replace('text-', 'border-').split(' ').join(' bg-opacity-5 ')}`}
-              >
-                <div className="flex items-start gap-5 mb-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${event.color} border border-white/5 group-hover:rotate-6 transition-transform flex-shrink-0`}>
-                    <event.icon size={24} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-bold text-lg tracking-tight">{event.label}</h4>
-                        <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">{hijriData?.hijriMonthEn} {event.date}, {hijriData?.hijriYear} AH</p>
-                      </div>
-                      <ChevronRight size={18} className="text-white/20 group-hover:text-gold-400 transition-colors" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description & Sunnah Info */}
-                <div className="space-y-3 ml-0">
-                  <p className="text-sm text-white/70 leading-relaxed">{event.description}</p>
-                  
-                  {/* Sunnah Tip */}
-                  <div className="bg-black/20 rounded-lg p-3 border border-white/5">
-                    <p className="text-[10px] font-bold text-gold-400 mb-1 uppercase tracking-wider">💡 Sunnah Tip</p>
-                    <p className="text-xs text-white/60">{event.sunnah_tip}</p>
-                  </div>
-
-                  {/* Reward */}
-                  {event.reward && (
-                    <div className="flex items-center gap-2 text-xs pt-2">
-                      <span className="text-lg">{event.reward.split(' ')[0]}</span>
-                      <span className="text-white/70">{event.reward.substring(2)}</span>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-white/40">
-              <p className="text-sm">No upcoming events this month</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Ramadan Jumu'ah Info */}
-      {hijriData?.isRamadan && (
-        <section className="bg-gradient-to-br from-gold-500/10 via-islamic-green-900/40 to-islamic-green-950/40 rounded-[2.5rem] p-10 border border-gold-500/20 relative overflow-hidden group">
-          <div className="relative z-10 flex flex-col gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gold-500/20 rounded-2xl flex items-center justify-center text-gold-400">
-                <Moon size={24} />
               </div>
-              <div>
-                <h3 className="font-bold text-xl tracking-tight">🌙 Ramadan Kareem</h3>
-                <p className="accent-font text-gold-400/70 text-sm">The blessed month of fasting</p>
-              </div>
-            </div>
-            <p className="text-sm text-white/70 leading-relaxed">
-              May this Ramadan bring you closer to Allah's mercy. Observe the fast, recite the Quran, and spread kindness. 
-            </p>
+            ))}
           </div>
-          <div className="absolute -right-10 -bottom-10 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity rotate-12">
-            <Moon size={200} strokeWidth={1} />
+
+          {/* Compact Calendar Grid */}
+          <div className="grid grid-cols-7 gap-2">
+            {days.map((day, i) => {
+              if (day === null) return <div key={`empty-${i}`} className="h-9" />;
+
+              const today = isToday(day);
+              const isSelected = selectedDay === day;
+              const dayInfo = daysData.get(day);
+              const friday = dayInfo?.isFriday;
+              const event = events.find(e => e.date === day);
+
+              return (
+                <motion.button
+                  key={day}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.85 }}
+                  onClick={() => setSelectedDay(day)}
+                  className={`h-9 w-9 text-sm font-bold rounded transition-all border relative flex items-center justify-center ${
+                    isSelected
+                      ? 'bg-gold-500 text-islamic-green-950 border-gold-400 shadow-lg'
+                      : today
+                        ? 'bg-gold-500/60 text-white border-gold-400/60'
+                        : friday
+                          ? 'bg-emerald-500/20 border-emerald-500/40 hover:bg-emerald-500/30'
+                          : 'bg-white/5 border-white/5 hover:bg-white/10'
+                  }`}
+                >
+                  {day}
+                  {event && <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-gold-400 rounded-full" />}
+                </motion.button>
+              );
+            })}
+          </div>
+
+          {/* Legend */}
+          <div className="grid grid-cols-3 gap-2 text-xs text-white/40 pt-3 border-t border-white/5">
+            <div>● Today</div>
+            <div>◆ Friday</div>
+            <div>● Event</div>
           </div>
         </section>
-      )}
+
+        {/* RIGHT: Day Details & Notes */}
+        {selectedDay && (
+          <motion.section
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="bg-gradient-to-br from-islamic-green-900/40 to-islamic-green-950/40 rounded-2xl p-4 border border-white/5 space-y-4 h-fit"
+          >
+            {/* Day Header */}
+            <div className="space-y-2 pb-4 border-b border-white/5">
+              <div className="flex items-center gap-2">
+                <BookOpen size={20} className="text-gold-400" />
+                <div>
+                  <p className="text-sm font-bold text-gold-400">Day Details</p>
+                  <p className="text-xs text-white/60">{getGregorianDate(selectedDay)}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Hijri Information */}
+            {daysData.get(selectedDay) && (
+              <div className="bg-white/5 rounded-lg p-3 space-y-2">
+                <p className="text-xs text-white/50 uppercase tracking-widest font-bold">Hijri Date</p>
+                <p className="text-lg font-bold text-gold-400">{daysData.get(selectedDay)?.hijriDay} {daysData.get(selectedDay)?.hijriMonthAr}</p>
+                {daysData.get(selectedDay)?.isFriday && <p className="text-sm text-emerald-400">🕌 Jumu'ah (Friday)</p>}
+              </div>
+            )}
+
+            {/* Events for Day */}
+            {events.find(e => e.date === selectedDay) && (
+              <div className="bg-white/5 rounded-lg p-3 space-y-2">
+                <p className="text-xs font-bold text-gold-400 uppercase tracking-widest">📅 Events</p>
+                {events.filter(e => e.date === selectedDay).map((event, idx) => (
+                  <p key={idx} className="text-sm text-white/80">{event.label}</p>
+                ))}
+              </div>
+            )}
+
+            {/* Notes Section */}
+            <div className="space-y-2">
+              <p className="text-xs text-white/50 uppercase tracking-widest font-bold">📝 Daily Notes</p>
+              <textarea
+                value={dayNote.note}
+                onChange={(e) => handleNoteChange(e.target.value)}
+                placeholder="Add notes for this day..."
+                className="w-full h-24 bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold-500/50 focus:bg-white/8 resize-none"
+              />
+              <button 
+                onClick={handleSaveNote}
+                className="w-full flex items-center justify-center gap-2 bg-gold-500 hover:bg-gold-600 text-islamic-green-950 py-2.5 rounded-lg font-semibold text-sm transition-all active:scale-95 disabled:opacity-50"
+              >
+                {noteSaved ? (
+                  <>
+                    <Check size={16} />
+                    Note Saved!
+                  </>
+                ) : (
+                  <>
+                    <Save size={16} />
+                    Save Note
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-2 gap-3 pt-3">
+              <motion.button 
+                onClick={handleAzkar}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                className="bg-emerald-600/40 hover:bg-emerald-600/60 text-white text-sm py-3 rounded-lg font-semibold transition-all border border-emerald-500/30 flex items-center justify-center gap-2"
+              >
+                📿 Azkar
+              </motion.button>
+              <motion.button 
+                onClick={handleDua}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                className="bg-blue-600/40 hover:bg-blue-600/60 text-white text-sm py-3 rounded-lg font-semibold transition-all border border-blue-500/30 flex items-center justify-center gap-2"
+              >
+                🤲 Dua
+              </motion.button>
+            </div>
+          </motion.section>
+        )}
+      </div>
+
+      {/* Toast Notifications */}
+      <AnimatePresence>
+        {showAzkarToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-emerald-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50"
+          >
+            <span>📿 Azkar section available in sidebar</span>
+          </motion.div>
+        )}
+        {showDuaToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50"
+          >
+            <span>🤲 Recite Dua for this day</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

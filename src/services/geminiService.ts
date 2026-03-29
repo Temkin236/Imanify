@@ -12,7 +12,6 @@ export class GeminiService {
   constructor() {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
     if (!apiKey) {
-      console.warn("VITE_GEMINI_API_KEY is not set — AI assistant disabled. Set it in .env to enable.");
       this.ai = undefined;
       return;
     }

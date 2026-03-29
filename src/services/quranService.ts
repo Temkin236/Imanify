@@ -24,21 +24,13 @@ export const quranService = {
     // Fetch English
     const enRes = await fetch(`${BASE_URL}/surah/${id}/en.sahih`);
     const enData = await enRes.json();
-
-    // Note: Amharic is not available in alquran.cloud by default in a simple way 
-    // that matches the others perfectly without multiple calls or a specific edition.
-    // We will use a placeholder or a mock for Amharic if not found, 
-    // or try to find an Amharic edition if it exists in their system.
-    // Edition 'am.sadiq' is available in some systems.
     
     let amData: any = { ayahs: [] };
     try {
       const amRes = await fetch(`${BASE_URL}/surah/${id}/am.sadiq`);
-      if (amRes.ok) {
-        amData = await amRes.json();
-      }
+      if (amRes.ok) amData = await amRes.json();
     } catch (e) {
-      console.error("Amharic translation not found");
+      // Amharic fallback
     }
 
     const verses: Verse[] = arData.data.ayahs.map((ayah: any, index: number) => ({

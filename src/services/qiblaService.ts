@@ -1,9 +1,3 @@
-/**
- * Qibla Direction Service
- * Calculates direction to Kaaba in Mecca using browser geolocation
- */
-
-// Kaaba coordinates in Mecca
 const KAABA_LAT = 21.4225;
 const KAABA_LNG = 39.8262;
 
@@ -21,9 +15,6 @@ export interface GeolocationError {
   message: string;
 }
 
-/**
- * Get current Qibla direction using browser geolocation
- */
 export async function getQiblaDirection(): Promise<QiblaData> {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {

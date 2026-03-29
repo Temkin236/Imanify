@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   AlertCircle,
@@ -78,7 +78,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [countdown, setCountdown] = useState<TimeUntil>(DEFAULT_COUNTDOWN);
 
-  const greeting = useMemo(() => getGreeting(), []);
+  const greeting = getGreeting();
 
   useEffect(() => {
     const fetchData = async () => {
