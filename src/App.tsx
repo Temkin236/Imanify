@@ -7,6 +7,7 @@ import { Chatbot } from './components/Chatbot';
 import { RamadanHub } from './components/RamadanHub';
 import { Calendar } from './components/Calendar';
 import { Settings } from './components/Settings';
+import { PrayerQibla } from './components/PrayerQibla';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -20,6 +21,8 @@ export default function App() {
         return <QuranReader />;
       case 'azkar':
         return <Azkar isRamadanMode={isRamadanMode} />;
+      case 'prayer':
+        return <PrayerQibla />;
       case 'chat':
         return <Chatbot />;
       case 'ramadan':

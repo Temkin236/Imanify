@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   Sparkles,
-  Calendar
+  Calendar,
+  Compass
 } from 'lucide-react';
 import PWAInstallButton from './PWAInstallButton';
 
@@ -31,6 +32,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
     { id: 'quran', icon: BookOpen, label: 'Quran' },
     { id: 'azkar', icon: Heart, label: 'Azkar' },
     { id: 'calendar', icon: Calendar, label: 'Calendar' },
+    { id: 'prayer', icon: Compass, label: 'Prayer' },
     { id: 'chat', icon: MessageSquare, label: 'Assistant' },
   ];
 
