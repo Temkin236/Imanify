@@ -1,23 +1,69 @@
 import { PrayerTimes, Prayer, PrayerReminder } from '../types';
 
 interface AladhanResponse {
+  code: number;
+  status: string;
   data?: {
     timings?: PrayerTimes;
+    date?: {
+      gregorian: string;
+      hijri: string;
+    };
+    meta?: {
+      latitude: number;
+      longitude: number;
+      timezone: string;
+      method: {
+        id: number;
+        name: string;
+      };
+    };
     [key: string]: any;
   };
 }
 
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
 class PrayerService {
+  private isCacheValid(key: string): boolean {
+    const entry = cache.get(key);
+    if (!entry) return false;
+    return Date.now() - entry.timestamp < CACHE_TTL;
+  }
+
+  private getFromCache<T>(key: string): T | null {
+    if (this.isCacheValid(key)) {
+      return cache.get(key)?.data || null;
+    }
+    cache.delete(key);
+    return null;
+  }
+
+  private setCache<T>(key: string, data: T): void {
+    cache.set(key, { data, timestamp: Date.now() });
+  }
+
   async getPrayerTimes(
     date: string,
     city: string = 'Addis Ababa',
     country: string = 'Ethiopia'
   ): Promise<PrayerTimes | null> {
+    const cacheKey = `${city}-${country}-${date}`;
+    
+    const cached = this.getFromCache<PrayerTimes>(cacheKey);
+    if (cached) return cached;
+
     try {
       const url = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&date=${date}&method=2`;
       const response = await fetch(url);
       const data: AladhanResponse = await response.json();
-      return data.data?.timings || null;
+      
+      if (data.data?.timings) {
+        this.setCache(cacheKey, data.data.timings);
+        return data.data.timings;
+      }
+      return null;
     } catch (error) {
       throw new Error(`Failed to fetch prayer times: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
