@@ -69,11 +69,11 @@ Imanify is a full-stack Islamic application with a clear separation of concerns:
                          ││
                     ┌────▼────┬────────────┐
                     │          │           │
-            ┌───────▼──┐  ┌────▼───┐  ┌────▼──────┐
-            │ AlQuran  │  │ Local  │  │  Gemini   │
-            │   API    │  │ Database  │   API    │
-            │(Arabic)  │  │(Amharic)  │(Chatbot) │
-            └──────────┘  └────────┘  └──────────┘
+            ┌───────▼──┐  ┌────▼───┐
+            │ AlQuran  │  │ Local  │
+            │   API    │  │ Database  │
+            │(Arabic)  │  │(Amharic)  │
+            └──────────┘  └────────┘
 ```
 
 ## 🎨 Frontend Architecture
@@ -95,7 +95,7 @@ src/
 │
 ├── services/
 │   ├── quranService.ts          # Quran API calls
-│   └── geminiService.ts         # Gemini API calls
+│   └── chatbotService.ts        # Chatbot API calls
 │
 ├── types.ts                     # Type definitions
 ├── constants.ts                 # App constants
@@ -497,7 +497,6 @@ Development           Production
 
 ### Backend ↔ External APIs
 - AlQuran.cloud for Quran data
-- Google Gemini for AI features
 - Local database for Amharic
 
 ### Error Handling Flow

@@ -34,7 +34,7 @@
 - **Prayer Times**: (Coming soon)
 
 ### 🤖 Smart Features
-- **AI Chatbot**: Ask questions about Islam and get answers using Gemini AI
+- **AI Chatbot**: Ask questions about Islam and get answers
 - **Settings**: Customize language, theme, and preferences
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 
@@ -52,7 +52,7 @@
 - **Framework**: Express.js
 - **Language**: TypeScript
 - **Database**: JSON-based (Amharic) + External APIs
-- **APIs**: AlQuran.cloud, Google Gemini API
+- **APIs**: AlQuran.cloud
 
 ### DevOps
 - **Containerization**: Docker & Docker Compose
@@ -235,9 +235,6 @@ CORS_ORIGIN=http://localhost:3000,http://localhost:5173
 # API
 ALQURAN_API_TIMEOUT=5000
 API_CACHE_TTL_HOURS=24
-
-# Gemini API (for chatbot)
-GEMINI_API_KEY=your_key_here
 ```
 
 ### Frontend

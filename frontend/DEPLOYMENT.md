@@ -331,9 +331,6 @@ DB_PORT=5432
 DB_NAME=imanify_prod
 DB_USER=imanify_user
 DB_PASSWORD=secure_password
-
-# Gemini API
-GEMINI_API_KEY=your_production_key
 ```
 
 ## 📊 Monitoring

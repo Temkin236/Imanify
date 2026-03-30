@@ -16,7 +16,7 @@ interface Config {
   alquranApiTimeout: number;
   apiCacheTtlHours: number;
 
-  // Gemini API (for chatbot)
+  // Chat API
   geminiApiKey?: string;
 
   // Rate Limiting
