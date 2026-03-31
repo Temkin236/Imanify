@@ -112,7 +112,7 @@ export interface CustomRequest extends Request {
 }
 
 export interface CustomResponse extends Response {
-  locals?: {
+  locals: {
     message?: string;
     [key: string]: any;
   };

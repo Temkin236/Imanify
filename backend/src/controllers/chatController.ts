@@ -1,38 +1,72 @@
-import { Response } from 'express';
-import qiblaService from '../services/qiblaService';
-import { CustomRequest, ApiResponse, QiblaData } from '../types';
+import { NextFunction, Response } from 'express';
+import geminiService from '../services/geminiService';
+import ragService from '../services/ragService';
+import { ApiResponse, ChatRequestBody, ChatResponse, CustomRequest } from '../types';
+import { AppError } from '../utils/errors';
 
-export async function getQiblaDirection(req: CustomRequest, res: Response): Promise<void> {
+function buildPrompt(question: string, context: Awaited<ReturnType<typeof ragService.getContext>>): string {
+  const quranSection = context.quran.length
+    ? context.quran
+        .map(
+          (verse) =>
+            `- Surah ${verse.surah}, Ayah ${verse.ayah}\n  English: ${verse.english}\n  Amharic: ${verse.amharic}`
+        )
+        .join('\n')
+    : '- No Quran match found.';
+
+  const azkarSection = context.azkar.length
+    ? context.azkar
+        .map(
+          (zikr) =>
+            `- Category: ${zikr.category}\n  Arabic: ${zikr.arabic}\n  English: ${zikr.translation_en}\n  Amharic: ${zikr.translation_am}`
+        )
+        .join('\n')
+    : '- No Azkar match found.';
+
+  return [
+    'You are an Islamic assistant.',
+    'Use ONLY the provided Quran and Azkar context.',
+    'If unsure, say you do not know.',
+    'Keep the tone respectful, concise, and safe.',
+    '',
+    `User question: ${question}`,
+    '',
+    'Quran context:',
+    quranSection,
+    '',
+    'Azkar context:',
+    azkarSection
+  ].join('\n');
+}
+
+export async function sendMessage(
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   try {
-    const { latitude, longitude } = req.query;
-    const lat = typeof latitude === 'string' ? parseFloat(latitude) : 0;
-    const lng = typeof longitude === 'string' ? parseFloat(longitude) : 0;
+    const { message } = req.body as ChatRequestBody;
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      throw new AppError('Message is required', 400);
+    }
 
-    const qibla = await qiblaService.getQiblaDirection(lat, lng);
-    res.json({ success: true, data: qibla } as ApiResponse<QiblaData>);
+    const context = await ragService.getContext(message);
+    const prompt = buildPrompt(message.trim(), context);
+
+    let answer = await geminiService.generateFromPrompt(prompt);
+    if (!answer.trim()) {
+      answer = 'I do not know based on the provided Quran and Azkar context.';
+    }
+
+    res.json({
+      success: true,
+      data: {
+        answer,
+        context
+      }
+    } as ApiResponse<ChatResponse>);
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ success: false, error: errorMessage } as ApiResponse<null>);
+    next(error);
   }
 }
 
-export async function calculateQibla(req: CustomRequest, res: Response): Promise<void> {
-  try {
-    const { latitude, longitude } = req.body;
-    const result = await qiblaService.calculateQibla(latitude, longitude);
-    res.json({ success: true, data: result } as ApiResponse<QiblaData>);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ success: false, error: errorMessage } as ApiResponse<null>);
-  }
-}
-
-export async function getQiblaInfo(req: CustomRequest, res: Response): Promise<void> {
-  try {
-    const info = await qiblaService.getQiblaInfo();
-    res.json({ success: true, data: info } as ApiResponse<object>);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ success: false, error: errorMessage } as ApiResponse<null>);
-  }
-}

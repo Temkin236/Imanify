@@ -28,15 +28,15 @@ class QuranAmharic implements QuranAmharicData {
     return [];
   }
 
-  static async findBySurah(surahNumber: number): Promise<QuranAmharicData[]> {
+  static async findBySurah(_surahNumber: number): Promise<QuranAmharicData[]> {
     return [];
   }
 
-  static async findByAyah(surahNumber: number, ayahNumber: number): Promise<QuranAmharicData | null> {
+  static async findByAyah(_surahNumber: number, _ayahNumber: number): Promise<QuranAmharicData | null> {
     return null;
   }
 
-  static async search(query: string): Promise<QuranAmharicData[]> {
+  static async search(_query: string): Promise<QuranAmharicData[]> {
     return [];
   }
 

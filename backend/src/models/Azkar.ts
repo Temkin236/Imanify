@@ -25,7 +25,7 @@ class Azkar implements AzkarType {
     return [];
   }
 
-  static async findByCategory(category: string): Promise<AzkarType[]> {
+  static async findByCategory(_category: string): Promise<AzkarType[]> {
     return [];
   }
 
@@ -39,15 +39,15 @@ class Azkar implements AzkarType {
     );
   }
 
-  static async findById(id: number): Promise<AzkarType | null> {
+  static async findById(_id: number): Promise<AzkarType | null> {
     return null;
   }
 
-  static async update(id: number, data: Partial<AzkarCreateData>): Promise<AzkarType | null> {
+  static async update(_id: number, _data: Partial<AzkarCreateData>): Promise<AzkarType | null> {
     return null;
   }
 
-  static async delete(id: number): Promise<boolean> {
+  static async delete(_id: number): Promise<boolean> {
     return true;
   }
 }

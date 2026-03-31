@@ -23,15 +23,15 @@ class User implements UserType {
     this.createdAt = new Date();
   }
 
-  static async findById(id: number): Promise<UserType | null> {
+  static async findById(_id: number): Promise<UserType | null> {
     return null;
   }
 
-  static async findByEmail(email: string): Promise<UserType | null> {
+  static async findByEmail(_email: string): Promise<UserType | null> {
     return null;
   }
 
-  static async findByUsername(username: string): Promise<UserType | null> {
+  static async findByUsername(_username: string): Promise<UserType | null> {
     return null;
   }
 
@@ -45,11 +45,11 @@ class User implements UserType {
     );
   }
 
-  static async update(id: number, data: Partial<UserCreateData>): Promise<UserType | null> {
+  static async update(_id: number, _data: Partial<UserCreateData>): Promise<UserType | null> {
     return null;
   }
 
-  static async delete(id: number): Promise<boolean> {
+  static async delete(_id: number): Promise<boolean> {
     return true;
   }
 

@@ -6,6 +6,7 @@ import prayerRoutes from './routes/prayerRoutes';
 import qiblaRoutes from './routes/qiblaRoutes';
 import chatRoutes from './routes/chatRoutes';
 import { ApiResponse } from './types';
+import { errorHandler } from './utils/errorHandler';
 
 const app: Express = express();
 
@@ -21,20 +22,26 @@ app.use('/api/qibla', qiblaRoutes);
 app.use('/api/chat', chatRoutes);
 
 // Health check
-app.get('/api/health', (req: Request, res: Response) => {
+app.get('/api/health', (_req: Request, res: Response) => {
   res.json({
-    status: 'OK',
-    message: 'Imanify Backend is running',
-    timestamp: new Date()
+    success: true,
+    data: {
+      status: 'OK',
+      message: 'Imanify Backend is running'
+    },
+    timestamp: new Date().toISOString()
   } as ApiResponse<object>);
 });
 
 // 404 handler
-app.use((req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.status(404).json({
     success: false,
-    error: 'Route not found'
+    error: 'Route not found',
+    timestamp: new Date().toISOString()
   } as ApiResponse<null>);
 });
+
+app.use(errorHandler);
 
 export default app;

@@ -1,53 +1,26 @@
-import { Response } from 'express';
-import { CustomRequest, ApiResponse, ChatMessage } from '../types';
+import { NextFunction, Response } from 'express';
+import qiblaService from '../services/qiblaService';
+import { ApiResponse, CustomRequest, QiblaData } from '../types';
+import { AppError } from '../utils/errors';
 
-export async function sendMessage(req: CustomRequest, res: Response): Promise<void> {
+export async function getQiblaDirection(
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   try {
-    const { message, userId } = req.body;
+    const latParam = req.query.lat;
+    const lonParam = req.query.lon;
+    const lat = typeof latParam === 'string' ? Number(latParam) : Number.NaN;
+    const lon = typeof lonParam === 'string' ? Number(lonParam) : Number.NaN;
 
-    res.json({
-      success: true,
-      data: {
-        userId,
-        message,
-        response: 'Chat response placeholder',
-        timestamp: new Date()
-      } as ChatMessage
-    } as ApiResponse<ChatMessage>);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      throw new AppError('Valid lat and lon query parameters are required', 400);
+    }
+
+    const qibla = await qiblaService.getQiblaDirection(lat, lon);
+    res.json({ success: true, data: qibla } as ApiResponse<QiblaData>);
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ success: false, error: errorMessage } as ApiResponse<null>);
-  }
-}
-
-export async function getChatHistory(req: CustomRequest, res: Response): Promise<void> {
-  try {
-    const { userId } = req.params;
-
-    res.json({
-      success: true,
-      data: {
-        userId,
-        messages: []
-      }
-    } as ApiResponse<object>);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ success: false, error: errorMessage } as ApiResponse<null>);
-  }
-}
-
-export async function clearChatHistory(req: CustomRequest, res: Response): Promise<void> {
-  try {
-    const { userId } = req.params;
-
-    res.json({
-      success: true,
-      message: 'Chat history cleared',
-      data: { userId }
-    } as ApiResponse<object>);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ success: false, error: errorMessage } as ApiResponse<null>);
+    next(error);
   }
 }
