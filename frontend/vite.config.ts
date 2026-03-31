@@ -13,7 +13,7 @@ export default defineConfig(({mode}) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        strategies: isDev ? 'injectManifest' : 'generateSW',
+        strategies: 'generateSW',
         includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
         manifest: {
           name: 'Imanify - Your Islamic Companion',
@@ -76,7 +76,7 @@ export default defineConfig(({mode}) => {
           ],
         },
         workbox: {
-          globPatterns: isDev ? ['**/*.{js}'] : ['**/*.{js,css,html,ico,png,svg}'],
+          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
           globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
           runtimeCaching: [
             {
