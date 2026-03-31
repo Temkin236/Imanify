@@ -90,13 +90,13 @@ export async function getPrayerTimes(
   city: string = 'Addis Ababa', // Default to Addis Ababa
   country: string = 'Ethiopia'
 ): Promise<PrayerData> {
-  try {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const dateStr = `${day}-${month}-${year}`;
-    const cacheKey = `${city}-${date.toDateString()}`;
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const dateStr = `${day}-${month}-${year}`;
+  const cacheKey = `${city}-${date.toDateString()}`;
 
+  try {
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
       return cached.data;

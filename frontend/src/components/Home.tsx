@@ -26,6 +26,7 @@ import { TimeUntil } from '../services/prayerService';
 interface HomeProps {
   setActiveTab: (tab: string) => void;
   isRamadanMode: boolean;
+  streak: number;
 }
 
 const DEFAULT_COUNTDOWN: TimeUntil = {
@@ -70,7 +71,7 @@ function getTimeUntil(targetHHMM: string): TimeUntil {
   };
 }
 
-export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
+export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak }) => {
   const [snapshot, setSnapshot] = useState<HomeSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -128,6 +129,11 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode }) => {
         </motion.div>
 
         <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-gold-500/30 bg-gold-500/10 text-gold-400">
+            <TrendingUp size={14} />
+            <span className="text-[11px] font-bold uppercase tracking-[0.14em]">🔥 {streak} Day Streak</span>
+          </div>
+
           <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-gold-500/20 bg-gold-500/10 text-gold-400">
             <Moon size={14} fill="currentColor" />
             <span className="text-[11px] font-bold uppercase tracking-[0.14em]">{hijriLabel}</span>

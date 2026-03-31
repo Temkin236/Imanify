@@ -6,12 +6,14 @@ import {VitePWA} from 'vite-plugin-pwa';
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
+  const isDev = mode === 'development';
   return {
     plugins: [
       react(),
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
+        strategies: isDev ? 'injectManifest' : 'generateSW',
         includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
         manifest: {
           name: 'Imanify - Your Islamic Companion',
@@ -74,8 +76,8 @@ export default defineConfig(({mode}) => {
           ],
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-          globIgnores: ['**/node_modules/**/*'],
+          globPatterns: isDev ? ['**/*.{js}'] : ['**/*.{js,css,html,ico,png,svg}'],
+          globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/api\.aladhan\.com\/.*/i,

@@ -5,6 +5,8 @@ import azkarRoutes from './routes/azkarRoutes';
 import prayerRoutes from './routes/prayerRoutes';
 import qiblaRoutes from './routes/qiblaRoutes';
 import chatRoutes from './routes/chatRoutes';
+import authRoutes from './routes/authRoutes';
+import userRoutes from './routes/userRoutes';
 import { ApiResponse } from './types';
 import { errorHandler } from './utils/errorHandler';
 
@@ -32,6 +34,10 @@ app.get('/api', (_req: Request, res: Response) => {
       status: 'OK',
       endpoints: {
         health: '/api/health',
+        authLogin: 'POST /api/auth/login',
+        authRegister: 'POST /api/auth/register',
+        userProfile: 'GET /api/user/profile',
+        userActivity: 'POST /api/user/activity',
         quranAyah: '/api/quran/:surah/:ayah',
         azkarAll: '/api/azkar',
         azkarCategory: '/api/azkar/:category',
@@ -45,6 +51,8 @@ app.get('/api', (_req: Request, res: Response) => {
 });
 
 // Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/quran', quranRoutes);
 app.use('/api/azkar', azkarRoutes);
 app.use('/api/prayer', prayerRoutes);

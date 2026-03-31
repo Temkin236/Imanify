@@ -5,9 +5,10 @@ import { Moon, Bell, Globe, Shield, LogOut, ChevronRight, Sparkles } from 'lucid
 interface SettingsProps {
   isRamadanMode: boolean;
   setIsRamadanMode: (val: boolean) => void;
+  onLogout: () => void;
 }
 
-export const Settings: React.FC<SettingsProps> = ({ isRamadanMode, setIsRamadanMode }) => {
+export const Settings: React.FC<SettingsProps> = ({ isRamadanMode, setIsRamadanMode, onLogout }) => {
   return (
     <div className="space-y-8 pb-20">
       <header className="px-2">
@@ -80,7 +81,10 @@ export const Settings: React.FC<SettingsProps> = ({ isRamadanMode, setIsRamadanM
         </div>
       </section>
 
-      <button className="w-full flex items-center justify-center gap-3 py-6 text-rose-400/60 hover:text-rose-400 transition-colors font-bold text-sm uppercase tracking-widest">
+      <button
+        onClick={onLogout}
+        className="w-full flex items-center justify-center gap-3 py-6 text-rose-400/60 hover:text-rose-400 transition-colors font-bold text-sm uppercase tracking-widest"
+      >
         <LogOut size={20} />
         Sign Out
       </button>
