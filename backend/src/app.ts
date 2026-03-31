@@ -14,6 +14,36 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/', (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    data: {
+      service: 'Imanify Backend API',
+      docs: '/api'
+    },
+    timestamp: new Date().toISOString()
+  } as ApiResponse<object>);
+});
+
+app.get('/api', (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    data: {
+      status: 'OK',
+      endpoints: {
+        health: '/api/health',
+        quranAyah: '/api/quran/:surah/:ayah',
+        azkarAll: '/api/azkar',
+        azkarCategory: '/api/azkar/:category',
+        prayerByCity: '/api/prayer?city=Addis%20Ababa',
+        qibla: '/api/qibla?lat=9.03&lon=38.74',
+        chat: 'POST /api/chat'
+      }
+    },
+    timestamp: new Date().toISOString()
+  } as ApiResponse<object>);
+});
+
 // Routes
 app.use('/api/quran', quranRoutes);
 app.use('/api/azkar', azkarRoutes);

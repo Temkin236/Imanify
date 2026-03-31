@@ -44,7 +44,7 @@ class QiblaService {
       Math.cos(lat1 * (Math.PI / 180)) * Math.sin(lat2 * (Math.PI / 180)) -
       Math.sin(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.cos(dLng);
 
-    let angle = Math.atan2(y, x) * (180 / Math.PI);
+    const angle = Math.atan2(y, x) * (180 / Math.PI);
     return (angle + 360) % 360;
   }
 
