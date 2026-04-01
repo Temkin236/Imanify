@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { CustomRequest, ApiResponse } from '../types';
+import { getUser, updateUser } from '../services/database';
 import { verifyToken } from './authController';
 
 interface UserProfile {
@@ -8,27 +9,6 @@ interface UserProfile {
   achievements: string[];
   lastActiveDate: string;
 }
-
-// Simple in-memory user store reference (shared with authController)
-const userStore = new Map<string, {
-  email: string;
-  password: string;
-  streak: number;
-  achievements: string[];
-  lastActiveDate: string;
-  createdAt: string;
-}>();
-
-// Initialize with demo user
-const demoUser = {
-  email: 'demo@imanify.app',
-  password: 'demo1234',
-  streak: 7,
-  achievements: ['beginner', 'consistent'],
-  lastActiveDate: new Date().toISOString(),
-  createdAt: new Date().toISOString()
-};
-userStore.set('demo@imanify.app', demoUser);
 
 export async function getProfile(req: CustomRequest, res: Response): Promise<void> {
   try {
@@ -52,7 +32,7 @@ export async function getProfile(req: CustomRequest, res: Response): Promise<voi
       return;
     }
 
-    const user = userStore.get(email);
+    const user = getUser(email);
     if (!user) {
       res.status(404).json({
         success: false,
@@ -103,7 +83,7 @@ export async function postActivity(req: CustomRequest, res: Response): Promise<v
       return;
     }
 
-    const user = userStore.get(email);
+    const user = getUser(email);
     if (!user) {
       res.status(404).json({
         success: false,
@@ -116,12 +96,10 @@ export async function postActivity(req: CustomRequest, res: Response): Promise<v
     const today = new Date().toDateString();
     const lastActive = new Date(user.lastActiveDate).toDateString();
 
-    if (lastActive !== today) {
-      user.streak += 1;
-    }
-
-    user.lastActiveDate = new Date().toISOString();
-    userStore.set(email, user);
+    updateUser(email, {
+      streak: lastActive !== today ? user.streak + 1 : user.streak,
+      lastActiveDate: new Date().toISOString()
+    });
 
     res.json({
       success: true,
@@ -134,11 +112,4 @@ export async function postActivity(req: CustomRequest, res: Response): Promise<v
       error: error instanceof Error ? error.message : 'Failed to post activity'
     } as ApiResponse<never>);
   }
-}
-
-export function setUserStore(store: Map<string, any>): void {
-  // Allow authController to share the same store
-  const entries = Array.from(store.entries());
-  userStore.clear();
-  entries.forEach(([key, value]) => userStore.set(key, value));
 }

@@ -1,38 +1,9 @@
 import { Response } from 'express';
 import { CustomRequest, ApiResponse } from '../types';
+import { getUser, createUser, userExists } from '../services/database';
 
-// Simple in-memory user store and token map (dev/demo only)
-interface StoredUser {
-  email: string;
-  password: string;
-  streak: number;
-  achievements: string[];
-  lastActiveDate: string;
-  createdAt: string;
-}
-
-interface AuthPayload {
-  token: string;
-  user: {
-    email: string;
-    streak: number;
-    achievements: string[];
-    lastActiveDate: string;
-  };
-}
-
-const users = new Map<string, StoredUser>();
-const tokens = new Map<string, string>(); // token -> email
-
-// Demo user for testing
-users.set('demo@imanify.app', {
-  email: 'demo@imanify.app',
-  password: 'demo1234',
-  streak: 7,
-  achievements: ['beginner', 'consistent'],
-  lastActiveDate: new Date().toISOString(),
-  createdAt: new Date().toISOString()
-});
+// Simple token storage
+const tokenToEmailMap = new Map<string, string>();
 
 function generateToken(): string {
   return `token_${Math.random().toString(36).substring(2, 15)}_${Date.now()}`;
@@ -50,7 +21,7 @@ export async function login(req: CustomRequest, res: Response): Promise<void> {
       return;
     }
 
-    const user = users.get(email);
+    const user = getUser(email);
     if (!user || user.password !== password) {
       res.status(401).json({
         success: false,
@@ -59,28 +30,22 @@ export async function login(req: CustomRequest, res: Response): Promise<void> {
       return;
     }
 
-    // Generate token
     const token = generateToken();
-    tokens.set(token, email);
-
-    // Update last active
-    user.lastActiveDate = new Date().toISOString();
-
-    const payload: AuthPayload = {
-      token,
-      user: {
-        email: user.email,
-        streak: user.streak,
-        achievements: user.achievements,
-        lastActiveDate: user.lastActiveDate
-      }
-    };
+    tokenToEmailMap.set(token, email);
 
     res.json({
       success: true,
-      data: payload,
+      data: {
+        token,
+        user: {
+          email: user.email,
+          streak: user.streak,
+          achievements: user.achievements,
+          lastActiveDate: user.lastActiveDate
+        }
+      },
       timestamp: new Date().toISOString()
-    } as ApiResponse<AuthPayload>);
+    } as ApiResponse<any>);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -109,7 +74,7 @@ export async function register(req: CustomRequest, res: Response): Promise<void>
       return;
     }
 
-    if (users.has(email)) {
+    if (userExists(email)) {
       res.status(409).json({
         success: false,
         error: 'Email already registered'
@@ -117,36 +82,23 @@ export async function register(req: CustomRequest, res: Response): Promise<void>
       return;
     }
 
-    const newUser: StoredUser = {
-      email,
-      password,
-      streak: 0,
-      achievements: [],
-      lastActiveDate: new Date().toISOString(),
-      createdAt: new Date().toISOString()
-    };
-
-    users.set(email, newUser);
-
-    // Generate token
+    const newUser = createUser(email, password);
     const token = generateToken();
-    tokens.set(token, email);
-
-    const payload: AuthPayload = {
-      token,
-      user: {
-        email: newUser.email,
-        streak: newUser.streak,
-        achievements: newUser.achievements,
-        lastActiveDate: newUser.lastActiveDate
-      }
-    };
+    tokenToEmailMap.set(token, email);
 
     res.status(201).json({
       success: true,
-      data: payload,
+      data: {
+        token,
+        user: {
+          email: newUser.email,
+          streak: newUser.streak,
+          achievements: newUser.achievements,
+          lastActiveDate: newUser.lastActiveDate
+        }
+      },
       timestamp: new Date().toISOString()
-    } as ApiResponse<AuthPayload>);
+    } as ApiResponse<any>);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -156,5 +108,9 @@ export async function register(req: CustomRequest, res: Response): Promise<void>
 }
 
 export function verifyToken(token: string): string | null {
-  return tokens.get(token) || null;
+  return tokenToEmailMap.get(token) || null;
+}
+
+export async function logout(token: string): Promise<void> {
+  tokenToEmailMap.delete(token);
 }
