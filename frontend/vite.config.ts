@@ -14,7 +14,7 @@ export default defineConfig(({mode}) => {
       VitePWA({
         registerType: 'autoUpdate',
         strategies: 'generateSW',
-        includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+        includeAssets: ['favicon.svg', 'robots.txt'],
         manifest: {
           name: 'Imanify - Your Islamic Companion',
           short_name: 'Imanify',
