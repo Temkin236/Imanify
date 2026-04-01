@@ -67,6 +67,7 @@ export interface QiblaData {
 export interface RagQuranMatch {
   surah: number;
   ayah: number;
+  arabic: string;
   english: string;
   amharic: string;
 }

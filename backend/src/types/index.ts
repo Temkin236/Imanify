@@ -117,3 +117,33 @@ export interface CustomResponse extends Response {
     [key: string]: any;
   };
 }
+
+export interface RagQuranMatch {
+  surah: number;
+  ayah: number;
+  arabic: string;
+  english: string;
+  amharic: string;
+}
+
+export interface RagAzkarMatch {
+  id: number;
+  category: string;
+  arabic: string;
+  translation_en: string;
+  translation_am: string;
+}
+
+export interface RagContextResult {
+  quran: RagQuranMatch[];
+  azkar: RagAzkarMatch[];
+}
+
+export interface ChatRequestBody {
+  message: string;
+}
+
+export interface ChatResponse {
+  answer: string;
+  context: RagContextResult;
+}
