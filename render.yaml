@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: imanify-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
