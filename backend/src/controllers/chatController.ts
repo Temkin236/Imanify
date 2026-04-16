@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express';
-import geminiService from '../services/geminiService';
+import ollamaService from '../services/ollamaService';
 import ragService from '../services/ragService';
 import { ApiResponse, ChatRequestBody, ChatResponse, CustomRequest } from '../types';
 import { AppError } from '../utils/errors';
@@ -16,9 +16,9 @@ export async function sendMessage(
     }
 
     const context = await ragService.getContext(message);
-    const prompt = geminiService.buildRagPrompt(message.trim(), context);
+    const prompt = ollamaService.buildRagPrompt(message.trim(), context);
 
-    let answer = await geminiService.generateFromPrompt(prompt);
+    let answer = await ollamaService.generateFromPrompt(prompt);
     if (!answer.trim()) {
       answer = 'أعتذر، لا أملك معلومات كافية لأجيب على سؤالك.\n\nI apologize, I do not have enough information to answer your question.\n\nይቅርታ፣ ይህን መጠይቅ ለመመለስ በቂ ዕውቀት የለኝም።';
     }
@@ -26,8 +26,7 @@ export async function sendMessage(
     res.json({
       success: true,
       data: {
-        answer,
-        context
+        answer
       }
     } as ApiResponse<ChatResponse>);
   } catch (error) {

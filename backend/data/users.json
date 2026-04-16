@@ -7,5 +7,68 @@
     "achievements": [],
     "lastActiveDate": "2026-04-01T06:47:47.056Z",
     "createdAt": "2026-04-01T06:41:20.823Z"
+  },
+  {
+    "id": "user_1775026313962_uhu78o",
+    "email": "temkin@gmail.com",
+    "password": "112345678",
+    "streak": 4,
+    "achievements": [],
+    "lastActiveDate": "2026-04-15T06:35:47.881Z",
+    "createdAt": "2026-04-01T06:51:53.962Z"
+  },
+  {
+    "id": "user_1775106558550_011mbk",
+    "email": "testuser_1118485909@test.com",
+    "password": "Test123456",
+    "streak": 0,
+    "achievements": [],
+    "lastActiveDate": "2026-04-02T05:09:18.551Z",
+    "createdAt": "2026-04-02T05:09:18.551Z"
+  },
+  {
+    "id": "user_1775106642135_07xia5",
+    "email": "testuser_1982708285@test.com",
+    "password": "Test123456",
+    "streak": 0,
+    "achievements": [],
+    "lastActiveDate": "2026-04-02T05:10:42.135Z",
+    "createdAt": "2026-04-02T05:10:42.135Z"
+  },
+  {
+    "id": "user_1775106741088_7ydyco",
+    "email": "testuser_164882056@test.com",
+    "password": "Test123456",
+    "streak": 0,
+    "achievements": [],
+    "lastActiveDate": "2026-04-02T05:12:21.175Z",
+    "createdAt": "2026-04-02T05:12:21.088Z"
+  },
+  {
+    "id": "user_1775107123702_f8hgv",
+    "email": "testuser_634758772@test.com",
+    "password": "Test123456",
+    "streak": 0,
+    "achievements": [],
+    "lastActiveDate": "2026-04-02T05:18:43.770Z",
+    "createdAt": "2026-04-02T05:18:43.702Z"
+  },
+  {
+    "id": "user_1775380777382_z53egd",
+    "email": "temkinabdu156@gmail.com",
+    "password": "memo31re",
+    "streak": 0,
+    "achievements": [],
+    "lastActiveDate": "2026-04-05T09:19:37.620Z",
+    "createdAt": "2026-04-05T09:19:37.382Z"
+  },
+  {
+    "id": "user_1776235630024_ydmkjd",
+    "email": "astu@gmail.com",
+    "password": "12345678",
+    "streak": 1,
+    "achievements": [],
+    "lastActiveDate": "2026-04-16T04:03:39.683Z",
+    "createdAt": "2026-04-15T06:47:10.025Z"
   }
 ]

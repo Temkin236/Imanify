@@ -1,7 +1,8 @@
+import 'dotenv/config';
 import app from './app';
 import { Server } from 'node:http';
 
-const DEFAULT_PORT = Number(process.env.PORT ?? 5000);
+const DEFAULT_PORT = Number(process.env.PORT ?? 3000);
 const MAX_PORT_ATTEMPTS = 20;
 
 function listenWithFallback(startPort: number, attempt: number = 0): Promise<void> {
