@@ -7,7 +7,7 @@ services:
     plan: free
     rootDir: backend
     buildCommand: "npm install && npm run build"
-    startCommand: "npx tsx src/server.ts"
+    startCommand: "npm run start"
     envVars:
       - key: NODE_ENV
         value: production
