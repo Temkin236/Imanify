@@ -1,6 +1,6 @@
 import { Response } from 'express';
-import { CustomRequest, ApiResponse } from '../types';
-import { getUser, createUser, userExists } from '../services/database';
+import { CustomRequest, ApiResponse } from '../types.js';
+import { getUser, createUser, userExists } from '../services/database.js';
 
 // Simple token storage
 const tokenToEmailMap = new Map<string, string>();

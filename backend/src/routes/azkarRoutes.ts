@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as azkarController from '../controllers/azkarController';
+import * as azkarController from '../controllers/azkarController.js';
 
 const router = Router();
 

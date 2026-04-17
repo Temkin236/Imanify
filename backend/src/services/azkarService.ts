@@ -1,6 +1,6 @@
-import azkarData from '../data/azkar.json';
-import { AzkarItem } from '../types';
-import { NotFoundError } from '../utils/errors';
+import azkarData from '../data/azkar.json.js';
+import { AzkarItem } from '../types.js';
+import { NotFoundError } from '../utils/errors.js';
 
 interface RawAzkarItem {
   id: number;

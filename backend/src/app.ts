@@ -1,14 +1,14 @@
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
-import quranRoutes from './routes/quranRoutes';
-import azkarRoutes from './routes/azkarRoutes';
-import prayerRoutes from './routes/prayerRoutes';
-import qiblaRoutes from './routes/qiblaRoutes';
-import chatRoutes from './routes/chatRoutes';
-import authRoutes from './routes/authRoutes';
-import userRoutes from './routes/userRoutes';
-import { ApiResponse } from './types';
-import { errorHandler } from './utils/errorHandler';
+import quranRoutes from './routes/quranRoutes.js';
+import azkarRoutes from './routes/azkarRoutes.js';
+import prayerRoutes from './routes/prayerRoutes.js';
+import qiblaRoutes from './routes/qiblaRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import { ApiResponse } from './types.js';
+import { errorHandler } from './utils/errorHandler.js';
 
 const app: Express = express();
 

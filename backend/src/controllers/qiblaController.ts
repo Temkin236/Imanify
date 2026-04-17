@@ -1,7 +1,7 @@
 import { NextFunction, Response } from 'express';
-import qiblaService from '../services/qiblaService';
-import { ApiResponse, CustomRequest, QiblaData } from '../types';
-import { AppError } from '../utils/errors';
+import qiblaService from '../services/qiblaService.js';
+import { ApiResponse, CustomRequest, QiblaData } from '../types.js';
+import { AppError } from '../utils/errors.js';
 
 export async function getQiblaDirection(
   req: CustomRequest,

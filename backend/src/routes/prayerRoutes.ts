@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as prayerController from '../controllers/prayerController';
+import * as prayerController from '../controllers/prayerController.js';
 
 const router = Router();
 

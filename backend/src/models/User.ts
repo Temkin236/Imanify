@@ -1,4 +1,4 @@
-import { User as UserType, UserCreateData } from '../types';
+import { User as UserType, UserCreateData } from '../types.js';
 
 class User implements UserType {
   id: number;

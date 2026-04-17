@@ -1,7 +1,7 @@
-import amharicQuranData from '../data/amharic_quran.json';
-import { AmharicQuranAyah, MergedQuranAyah } from '../types';
-import config from '../utils/config';
-import { AppError, NotFoundError, ServiceUnavailableError } from '../utils/errors';
+import amharicQuranData from '../data/amharic_quran.json.js';
+import { AmharicQuranAyah, MergedQuranAyah } from '../types.js';
+import config from '../utils/config.js';
+import { AppError, NotFoundError, ServiceUnavailableError } from '../utils/errors.js';
 
 interface RemoteAyah {
   numberInSurah: number;

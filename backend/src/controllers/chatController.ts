@@ -1,8 +1,8 @@
 import { NextFunction, Response } from 'express';
-import ollamaService from '../services/ollamaService';
-import ragService from '../services/ragService';
-import { ApiResponse, ChatRequestBody, ChatResponse, CustomRequest } from '../types';
-import { AppError } from '../utils/errors';
+import ollamaService from '../services/ollamaService.js';
+import ragService from '../services/ragService.js';
+import { ApiResponse, ChatRequestBody, ChatResponse, CustomRequest } from '../types.js';
+import { AppError } from '../utils/errors.js';
 
 export async function sendMessage(
   req: CustomRequest,

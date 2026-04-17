@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getProfile, postActivity } from '../controllers/userController';
+import { getProfile, postActivity } from '../controllers/userController.js';
 
 const router = Router();
 

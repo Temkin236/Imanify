@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import app from './app';
+import app from './app.js';
 import { Server } from 'node:http';
 
 const DEFAULT_PORT = Number(process.env.PORT ?? 3000);

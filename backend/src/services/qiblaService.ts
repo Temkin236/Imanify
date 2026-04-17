@@ -1,4 +1,4 @@
-import { QiblaData } from '../types';
+import { QiblaData } from '../types.js';
 
 interface QiblaInfo {
   kaabaLocation: {

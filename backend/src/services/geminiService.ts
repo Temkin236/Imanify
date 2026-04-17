@@ -1,6 +1,6 @@
-import config from '../utils/config';
-import { AppError } from '../utils/errors';
-import { RagContextResult } from '../types';
+import config from '../utils/config.js';
+import { AppError } from '../utils/errors.js';
+import { RagContextResult } from '../types.js';
 
 interface GeminiResponse {
   candidates?: Array<{

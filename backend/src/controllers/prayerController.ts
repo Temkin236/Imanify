@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express';
-import prayerService from '../services/prayerService';
-import { ApiResponse, CustomRequest, PrayerResponse } from '../types';
+import prayerService from '../services/prayerService.js';
+import { ApiResponse, CustomRequest, PrayerResponse } from '../types.js';
 
 export async function getPrayerTimes(
   req: CustomRequest,

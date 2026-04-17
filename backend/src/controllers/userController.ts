@@ -1,7 +1,7 @@
 import { Response } from 'express';
-import { CustomRequest, ApiResponse } from '../types';
-import { getUser, updateUser } from '../services/database';
-import { verifyToken } from './authController';
+import { CustomRequest, ApiResponse } from '../types.js';
+import { getUser, updateUser } from '../services/database.js';
+import { verifyToken } from './authController.js';
 
 interface UserProfile {
   email: string;

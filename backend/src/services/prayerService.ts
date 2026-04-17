@@ -1,5 +1,5 @@
-import { PrayerResponse, PrayerTimes } from '../types';
-import { AppError, ServiceUnavailableError } from '../utils/errors';
+import { PrayerResponse, PrayerTimes } from '../types.js';
+import { AppError, ServiceUnavailableError } from '../utils/errors.js';
 
 interface AladhanResponse {
   data?: {

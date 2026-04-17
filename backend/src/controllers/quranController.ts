@@ -1,7 +1,7 @@
 import { NextFunction, Response } from 'express';
-import quranService from '../services/quranService';
-import { ApiResponse, CustomRequest, MergedQuranAyah } from '../types';
-import { AppError } from '../utils/errors';
+import quranService from '../services/quranService.js';
+import { ApiResponse, CustomRequest, MergedQuranAyah } from '../types.js';
+import { AppError } from '../utils/errors.js';
 
 export async function getQuranAyah(
   req: CustomRequest,

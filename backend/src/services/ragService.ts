@@ -1,6 +1,6 @@
-import amharicQuranData from '../data/amharic_quran.json';
-import { RagAzkarMatch, RagContextResult, RagQuranMatch } from '../types';
-import azkarService from './azkarService';
+import amharicQuranData from '../data/amharic_quran.json.js';
+import { RagAzkarMatch, RagContextResult, RagQuranMatch } from '../types.js';
+import azkarService from './azkarService.js';
 
 interface QuranRecord {
   surah: number;

@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express';
-import azkarService from '../services/azkarService';
-import { ApiResponse, AzkarItem, CustomRequest } from '../types';
+import azkarService from '../services/azkarService.js';
+import { ApiResponse, AzkarItem, CustomRequest } from '../types.js';
 
 export async function getAllAzkar(
   _req: CustomRequest,

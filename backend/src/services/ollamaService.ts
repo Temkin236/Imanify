@@ -1,5 +1,5 @@
-import { AppError } from '../utils/errors';
-import { RagContextResult } from '../types';
+import { AppError } from '../utils/errors.js';
+import { RagContextResult } from '../types.js';
 
 interface OllamaResponse {
   response?: string;

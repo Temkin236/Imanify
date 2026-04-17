@@ -1,4 +1,4 @@
-import { Azkar as AzkarType, AzkarCreateData } from '../types';
+import { Azkar as AzkarType, AzkarCreateData } from '../types.js';
 
 class Azkar implements AzkarType {
   id: number;

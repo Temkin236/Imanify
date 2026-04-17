@@ -1,4 +1,4 @@
-import { QuranAmharicData } from '../types';
+import { QuranAmharicData } from '../types.js';
 
 class QuranAmharic implements QuranAmharicData {
   surahNumber: number;

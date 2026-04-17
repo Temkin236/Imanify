@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as quranController from '../controllers/quranController';
+import * as quranController from '../controllers/quranController.js';
 
 const router = Router();
 
