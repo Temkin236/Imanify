@@ -57,9 +57,9 @@
     "id": "user_1775380777382_z53egd",
     "email": "temkinabdu156@gmail.com",
     "password": "memo31re",
-    "streak": 0,
+    "streak": 1,
     "achievements": [],
-    "lastActiveDate": "2026-04-05T09:19:37.620Z",
+    "lastActiveDate": "2026-04-17T05:47:38.946Z",
     "createdAt": "2026-04-05T09:19:37.382Z"
   },
   {
@@ -68,7 +68,7 @@
     "password": "12345678",
     "streak": 1,
     "achievements": [],
-    "lastActiveDate": "2026-04-16T11:50:17.290Z",
+    "lastActiveDate": "2026-04-16T13:41:29.762Z",
     "createdAt": "2026-04-15T06:47:10.025Z"
   }
 ]

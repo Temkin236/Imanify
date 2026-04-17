@@ -31,17 +31,20 @@ export async function apiRequest<T>(
     }
   });
 
-  const payload = (await response.json()) as ApiResponse<T>;
+  let payload: ApiResponse<T> = {} as ApiResponse<T>;
+  const text = await response.text();
 
-  if (!response.ok || !payload.success) {
-    throw new Error(payload.error ?? 'Request failed');
+  try {
+    payload = text ? JSON.parse(text) : {};
+  } catch (e) {
+    // Handle invalid JSON explicitly
   }
 
-  if (payload.data === undefined) {
-    throw new Error('Missing response data');
+  if (!response.ok || payload.success === false) {
+    throw new Error(payload.error ?? `Request to ${response.url} failed with status ${response.status}`);
   }
 
-  return payload.data;
+  return (payload.data !== undefined ? payload.data : null) as unknown as T;
 }
 
 export { API_BASE_URL };
