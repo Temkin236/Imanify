@@ -1,4 +1,4 @@
-import amharicQuranData from '../data/amharic_quran.json.js';
+import amharicQuranData from '../data/amharic_quran.json' with { type: 'json' };
 import { AmharicQuranAyah, MergedQuranAyah } from '../types.js';
 import config from '../utils/config.js';
 import { AppError, NotFoundError, ServiceUnavailableError } from '../utils/errors.js';

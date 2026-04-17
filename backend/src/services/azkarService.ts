@@ -1,4 +1,4 @@
-import azkarData from '../data/azkar.json.js';
+import azkarData from '../data/azkar.json' with { type: 'json' };
 import { AzkarItem } from '../types.js';
 import { NotFoundError } from '../utils/errors.js';
 

@@ -1,4 +1,4 @@
-import amharicQuranData from '../data/amharic_quran.json.js';
+import amharicQuranData from '../data/amharic_quran.json' with { type: 'json' };
 import { RagAzkarMatch, RagContextResult, RagQuranMatch } from '../types.js';
 import azkarService from './azkarService.js';
 
