@@ -38,6 +38,8 @@ RUN mkdir -p logs
 
 # Expose port
 EXPOSE 3000
+# Start the server using dumb-init for proper signal handling
+CMD ["dumb-init", "npm", "start"]
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
