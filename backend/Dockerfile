@@ -38,13 +38,10 @@ RUN mkdir -p logs
 
 # Expose port
 EXPOSE 3000
+
 # Start the server using dumb-init for proper signal handling
 CMD ["dumb-init", "npm", "start"]
 
-# Health check
-
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["/usr/sbin/dumb-init", "--"]
-
-# Start application
-CMD ["node", "dist/server.js"]
+# Optional: Health check (uncomment if needed)
+# HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+#   CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 3000) + '/api/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
