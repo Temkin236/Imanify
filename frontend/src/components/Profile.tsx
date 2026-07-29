@@ -36,13 +36,13 @@ export function Profile() {
   }
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-5 sm:space-y-6 min-w-0">
       <header className="px-1">
-        <h2 className="text-4xl font-bold tracking-tight">Profile</h2>
-        <p className="accent-font text-gold-400 text-xl">Your growth, one day at a time</p>
+        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Profile</h2>
+        <p className="accent-font text-gold-400 text-lg sm:text-xl">Your growth, one day at a time</p>
       </header>
 
-      <section className="rounded-[2.4rem] border border-white/10 bg-white/5 p-6 space-y-4">
+      <section className="rounded-2xl sm:rounded-[2.4rem] border border-white/10 bg-white/5 p-4 sm:p-6 space-y-4">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-white/45 font-bold">Email</p>
           <p className="text-lg font-semibold mt-1">{user.email}</p>

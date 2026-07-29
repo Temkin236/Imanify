@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Compass, AlertCircle, RefreshCw, MapPin } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Compass, AlertCircle, RefreshCw, MapPin, Settings, ChevronLeft } from 'lucide-react';
 import { getQiblaDirection, getDirectionColor, QiblaData, GeolocationError } from '../services/qiblaService';
+
+// Common cities with coordinates for quick selection
+const COMMON_CITIES = [
+  { name: 'Addis Ababa, Ethiopia', lat: 9.0320, lng: 38.7469 },
+  { name: 'Dubai, UAE', lat: 25.2048, lng: 55.2708 },
+  { name: 'Cairo, Egypt', lat: 30.0444, lng: 31.2357 },
+  { name: 'Istanbul, Turkey', lat: 41.0082, lng: 28.9784 },
+  { name: 'Jakarta, Indonesia', lat: -6.2088, lng: 106.8456 },
+  { name: 'London, UK', lat: 51.5074, lng: -0.1278 },
+  { name: 'New York, USA', lat: 40.7128, lng: -74.006 },
+  { name: 'Kuala Lumpur, Malaysia', lat: 3.1390, lng: 101.6869 },
+  { name: 'Karachi, Pakistan', lat: 24.8607, lng: 67.0011 },
+];
 
 export const QiblaCompass: React.FC = () => {
   const [qibla, setQibla] = useState<QiblaData | null>(null);
@@ -9,6 +22,10 @@ export const QiblaCompass: React.FC = () => {
   const [error, setError] = useState<GeolocationError | null>(null);
   const [deviceOrientation, setDeviceOrientation] = useState(0);
   const [hasOrientation, setHasOrientation] = useState(false);
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [showCitySelect, setShowCitySelect] = useState(false);
+  const [manualLat, setManualLat] = useState('');
+  const [manualLng, setManualLng] = useState('');
 
   useEffect(() => {
     fetchQibla();
@@ -23,14 +40,24 @@ export const QiblaCompass: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchQibla = async () => {
+  const fetchQibla = async (lat?: number, lng?: number) => {
+    console.log('[QiblaCompass] Fetching qibla:', { lat, lng });
     try {
       setLoading(true);
       setError(null);
-      const data = await getQiblaDirection();
+      setQibla(null);
+
+      const data = await getQiblaDirection(lat, lng);
+      console.log('[QiblaCompass] Qibla data received:', data);
+
       setQibla(data);
+      setShowManualInput(false);
+      setShowCitySelect(false);
+      setManualLat('');
+      setManualLng('');
     } catch (err: any) {
-      setError(err);
+      console.error('[QiblaCompass] Qibla fetch error:', err);
+      setError(err || { code: -1, message: 'Unknown error occurred', canRetry: true });
       setQibla(null);
     } finally {
       setLoading(false);
@@ -68,12 +95,52 @@ export const QiblaCompass: React.FC = () => {
     }
   };
 
+  const handleCitySelect = (city: typeof COMMON_CITIES[0]) => {
+    console.log('[QiblaCompass] City selected:', city);
+    fetchQibla(city.lat, city.lng);
+  };
+
+  const handleManualLocation = async () => {
+    const lat = parseFloat(manualLat);
+    const lng = parseFloat(manualLng);
+
+    // Validation
+    if (isNaN(lat) || isNaN(lng)) {
+      alert('Please enter valid numbers for latitude and longitude');
+      return;
+    }
+
+    if (lat < -90 || lat > 90) {
+      alert('Latitude must be between -90 and 90');
+      return;
+    }
+
+    if (lng < -180 || lng > 180) {
+      alert('Longitude must be between -180 and 180');
+      return;
+    }
+
+    console.log('[QiblaCompass] Manual location submitted:', { lat, lng });
+
+    try {
+      setLoading(true);
+      setError(null);
+      await new Promise((resolve) => setTimeout(resolve, 300)); // Small delay for UI update
+      await fetchQibla(lat, lng);
+    } catch (err: any) {
+      console.error('[QiblaCompass] Manual location error:', err);
+      setError(err || { code: -1, message: 'Failed to set location', canRetry: true });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-gradient-to-br from-islamic-green-900/40 to-islamic-green-950/40 rounded-3xl p-8 border border-white/5 flex flex-col items-center justify-center min-h-[400px]"
+        className="bg-gradient-to-br from-islamic-green-900/40 to-islamic-green-950/40 rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-white/5 flex flex-col items-center justify-center min-h-[50vh] sm:min-h-[400px]"
       >
         <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity }}>
           <Compass size={40} className="text-gold-400 mb-4" />
@@ -83,25 +150,157 @@ export const QiblaCompass: React.FC = () => {
     );
   }
 
+  if (showManualInput) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gradient-to-br from-islamic-green-900/40 to-islamic-green-950/40 rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-white/5 space-y-4"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <MapPin size={24} className="text-gold-400" />
+          <h3 className="font-bold text-white text-lg">Enter Your Location</h3>
+        </div>
+
+        <div className="space-y-3">
+          <div>
+            <label className="block text-white/70 text-sm font-semibold mb-2">
+              Latitude
+              <span className="text-gold-400 text-xs ml-2">(-90 to 90)</span>
+            </label>
+            <input
+              type="number"
+              value={manualLat}
+              onChange={(e) => setManualLat(e.target.value)}
+              placeholder="e.g., 24.4539"
+              step="0.0001"
+              autoFocus
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:border-gold-400 focus:outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-white/70 text-sm font-semibold mb-2">
+              Longitude
+              <span className="text-gold-400 text-xs ml-2">(-180 to 180)</span>
+            </label>
+            <input
+              type="number"
+              value={manualLng}
+              onChange={(e) => setManualLng(e.target.value)}
+              placeholder="e.g., 46.6753"
+              step="0.0001"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:border-gold-400 focus:outline-none transition-all"
+            />
+          </div>
+
+          <p className="text-white/50 text-xs">
+            💡 Tip: Find coordinates on Google Maps (right-click &gt; coordinates) or use the city quick-select
+          </p>
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <button
+            onClick={handleManualLocation}
+            className="flex-1 bg-gold-500 hover:bg-gold-600 text-islamic-green-950 px-4 py-2 rounded-lg font-semibold text-sm transition-all active:scale-95"
+          >
+            Confirm Location
+          </button>
+          <button
+            onClick={() => setShowManualInput(false)}
+            className="flex-1 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all active:scale-95"
+          >
+            Cancel
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  if (showCitySelect) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gradient-to-br from-islamic-green-900/40 to-islamic-green-950/40 rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-white/5 space-y-4"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <MapPin size={24} className="text-gold-400" />
+          <h3 className="font-bold text-white text-lg">Select Your City</h3>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-96 overflow-y-auto">
+          {COMMON_CITIES.map((city) => (
+            <button
+              key={city.name}
+              onClick={() => handleCitySelect(city)}
+              className="bg-white/5 hover:bg-gold-500/20 border border-white/10 hover:border-gold-400 rounded-lg px-4 py-3 text-left transition-all active:scale-95 group"
+            >
+              <p className="font-semibold text-white group-hover:text-gold-400 text-sm">{city.name}</p>
+              <p className="text-white/50 text-xs">{city.lat.toFixed(2)}°, {city.lng.toFixed(2)}°</p>
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={() => setShowCitySelect(false)}
+          className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all active:scale-95"
+        >
+          <ChevronLeft size={16} />
+          Back
+        </button>
+
+        <p className="text-white/50 text-xs text-center">
+          Don't see your city? Enter coordinates manually
+        </p>
+      </motion.div>
+    );
+  }
+
   if (error) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-red-900/40 to-red-950/40 rounded-3xl p-8 border border-red-500/20"
+        className="bg-gradient-to-br from-red-900/40 to-red-950/40 rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-red-500/20"
       >
         <div className="flex items-start gap-4">
           <AlertCircle size={24} className="text-red-400 flex-shrink-0 mt-1" />
           <div className="flex-1">
             <h3 className="font-bold text-red-300 mb-2">Location Access Required</h3>
             <p className="text-white/60 text-sm mb-4">{error.message}</p>
-            <button
-              onClick={fetchQibla}
-              className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all active:scale-95"
-            >
-              <RefreshCw size={16} />
-              Try Again
-            </button>
+
+            <div className="flex flex-col gap-2">
+              {error.canRetry && (
+                <button
+                  onClick={() => fetchQibla()}
+                  className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all active:scale-95 w-full"
+                >
+                  <RefreshCw size={16} />
+                  Try Again
+                </button>
+              )}
+
+              <button
+                onClick={() => setShowCitySelect(true)}
+                className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all active:scale-95 w-full"
+              >
+                <MapPin size={16} />
+                Select Your City
+              </button>
+
+              <button
+                onClick={() => setShowManualInput(true)}
+                className="flex items-center justify-center gap-2 bg-gold-500 hover:bg-gold-600 text-islamic-green-950 px-4 py-2 rounded-lg font-semibold text-sm transition-all active:scale-95 w-full"
+              >
+                <Settings size={16} />
+                Enter Coordinates
+              </button>
+            </div>
+
+            <p className="text-white/40 text-xs mt-4">
+              💡 You can use a quick city, enter coordinates, or enable location in browser settings
+            </p>
           </div>
         </div>
       </motion.div>
@@ -120,7 +319,7 @@ export const QiblaCompass: React.FC = () => {
       className="space-y-6"
     >
       {/* Compass Circle */}
-      <div className="bg-gradient-to-br from-islamic-green-900/40 to-islamic-green-950/40 rounded-3xl p-8 border border-white/5">
+      <div className="bg-gradient-to-br from-islamic-green-900/40 to-islamic-green-950/40 rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-white/5">
         <div className="relative mx-auto aspect-square max-w-xs">
           {/* Outer circle background */}
           <svg className="w-full h-full" viewBox="0 0 200 200">
@@ -234,7 +433,7 @@ export const QiblaCompass: React.FC = () => {
 
       {/* Refresh Button */}
       <button
-        onClick={fetchQibla}
+        onClick={() => fetchQibla()}
         className="w-full flex items-center justify-center gap-2 bg-gold-500 hover:bg-gold-600 text-islamic-green-950 py-2 rounded-lg font-semibold text-sm transition-all active:scale-95"
       >
         <RefreshCw size={16} />

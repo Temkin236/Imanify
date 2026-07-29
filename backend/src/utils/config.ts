@@ -16,7 +16,9 @@ interface Config {
   alquranApiTimeout: number;
   apiCacheTtlHours: number;
 
-  // Chat API
+  // AI Providers (Cloud-based, optimized for Ethiopia)
+  openrouterApiKey?: string;
+  groqApiKey?: string;
   geminiApiKey?: string;
 
   // Rate Limiting
@@ -64,6 +66,8 @@ class ConfigManager {
       corsOrigin,
       alquranApiTimeout: parseInt(process.env.ALQURAN_API_TIMEOUT || '5000', 10),
       apiCacheTtlHours: parseInt(process.env.API_CACHE_TTL_HOURS || '24', 10),
+      openrouterApiKey: process.env.OPENROUTER_API_KEY,
+      groqApiKey: process.env.GROQ_API_KEY,
       geminiApiKey: process.env.GEMINI_API_KEY,
       rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
       rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),

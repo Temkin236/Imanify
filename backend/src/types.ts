@@ -80,9 +80,19 @@ export interface RagAzkarMatch {
   translation_am: string;
 }
 
+export interface RagHadithMatch {
+  id: string;
+  english: string;
+  narrator: string;
+  source: string;
+  grade: string;
+  arabic?: string;
+}
+
 export interface RagContextResult {
   quran: RagQuranMatch[];
   azkar: RagAzkarMatch[];
+  hadith?: RagHadithMatch[];
 }
 
 export interface ChatRequestBody {
@@ -91,7 +101,9 @@ export interface ChatRequestBody {
 
 export interface ChatResponse {
   answer: string;
-  context: RagContextResult;
+  service?: string;
+  cached?: boolean;
+  context?: RagContextResult;
 }
 
 // Legacy aliases retained for compatibility with existing model placeholders.

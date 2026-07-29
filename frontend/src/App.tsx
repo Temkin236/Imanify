@@ -12,6 +12,16 @@ import { AuthPage } from './components/auth/AuthPage';
 import { Profile } from './components/Profile';
 import { ProtectedView } from './components/auth/ProtectedView';
 import { useAuth } from './context/AuthContext';
+import { useTheme } from './context/ThemeContext';
+
+function LoadingScreen() {
+  const { isDarkMode } = useTheme();
+  return (
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'text-white/70 bg-islamic-green-950' : 'text-islamic-green-800/70 light-sky-gradient'}`}>
+      Loading Imanify...
+    </div>
+  );
+}
 
 export default function App() {
   const { isAuthenticated, loading, logout, user } = useAuth();
@@ -79,7 +89,7 @@ export default function App() {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-white/70">Loading Imanify...</div>;
+    return <LoadingScreen />;
   }
 
   if (isAuthScreen || !isAuthenticated) {

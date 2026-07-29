@@ -5,23 +5,76 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) |
 interface ChatResponse {
   success: boolean;
   data: {
-    answer: string;
+    response: string;
+    provider: string;
+    tokensUsed: number;
+    responseTime: number;
+    mode: string;
   };
   error?: string;
   timestamp?: string;
 }
 
 class ChatbotClient {
+  private userId: string = '';
+  private conversationId: string = '';
+
+  constructor() {
+    // Generate or retrieve conversation ID
+    const stored = localStorage.getItem('imanify_conversation_id');
+    this.conversationId = stored || this.generateId();
+    if (!stored) {
+      localStorage.setItem('imanify_conversation_id', this.conversationId);
+    }
+  }
+
+  private generateId(): string {
+    return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Set user ID for authenticated requests
+   */
+  setUserId(userId: string): void {
+    this.userId = userId;
+  }
+
+  /**
+   * Get or generate a user ID
+   */
+  private getUserId(): string {
+    if (this.userId) return this.userId;
+    
+    const stored = localStorage.getItem('imanify_guest_id');
+    if (stored) return stored;
+    
+    const guestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('imanify_guest_id', guestId);
+    return guestId;
+  }
+
   async sendMessage(message: string): Promise<string> {
     try {
-      console.log('[ChatBot] Sending message to:', `${API_BASE_URL}/chat`);
-      const response = await axios.post<ChatResponse>(`${API_BASE_URL}/chat`, { message });
+      const userId = this.getUserId();
+      const endpoint = `${API_BASE_URL}/chat/send`;
+      
+      console.log('[ChatBot] Sending message to:', endpoint, {
+        userId,
+        conversationId: this.conversationId
+      });
+
+      const response = await axios.post<ChatResponse>(endpoint, {
+        message: message.trim(),
+        userId,
+        conversationId: this.conversationId,
+        mode: 'islamic'
+      });
       
       if (!response.data.success) {
         throw new Error(response.data.error || 'Chat request failed');
       }
       
-      const answer = response.data.data?.answer;
+      const answer = response.data.data?.response;
       if (!answer) {
         throw new Error('No response received from chat service');
       }

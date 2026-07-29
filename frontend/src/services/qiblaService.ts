@@ -1,5 +1,7 @@
 const KAABA_LAT = 21.4225;
 const KAABA_LNG = 39.8262;
+const CACHE_KEY = 'imanify_qibla_location';
+const CACHE_EXPIRY = 1000 * 60 * 60; // 1 hour
 
 export interface QiblaData {
   angle: number; // 0-360 degrees, 0=North, 90=East, 180=South, 270=West
@@ -8,50 +10,187 @@ export interface QiblaData {
   userLat: number;
   userLng: number;
   lastUpdated: Date;
+  fromCache?: boolean;
 }
 
 export interface GeolocationError {
   code: number;
   message: string;
+  canRetry?: boolean;
 }
 
-export async function getQiblaDirection(): Promise<QiblaData> {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject({
-        code: 0,
-        message: 'Geolocation is not supported by your browser',
-      });
-      return;
+/**
+ * Calculate Qibla from coordinates
+ */
+function calculateQiblaFromCoords(lat: number, lng: number): QiblaData {
+  const qibla = calculateQiblaAngle(lat, lng);
+  const distance = calculateDistance(lat, lng, KAABA_LAT, KAABA_LNG);
+
+  return {
+    angle: qibla,
+    direction: getDirectionName(qibla),
+    distance,
+    userLat: lat,
+    userLng: lng,
+    lastUpdated: new Date(),
+  };
+}
+
+/**
+ * Get cached location from localStorage with validation
+ */
+function getCachedLocation(): QiblaData | null {
+  try {
+    if (!localStorage) return null;
+
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+
+    const data = JSON.parse(cached);
+    const now = Date.now();
+    const lastUpdated = new Date(data.lastUpdated).getTime();
+    const age = now - lastUpdated;
+
+    // Check if cache is still valid
+    if (age < CACHE_EXPIRY && data.userLat && data.userLng) {
+      return {
+        ...data,
+        fromCache: true,
+        lastUpdated: new Date(data.lastUpdated),
+      };
     }
+
+    // Clear expired cache
+    localStorage.removeItem(CACHE_KEY);
+    return null;
+  } catch (err) {
+    console.warn('[QiblaService] Cache read error:', err);
+    return null;
+  }
+}
+
+/**
+ * Cache location to localStorage safely
+ */
+function cacheLocation(data: QiblaData): void {
+  try {
+    if (!localStorage) return;
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  } catch (err) {
+    console.warn('[QiblaService] Cache write error:', err);
+  }
+}
+
+/**
+ * Get Qibla direction with smart fallback
+ * 1. If manual coords provided, use them
+ * 2. Try to get current location
+ * 3. Fall back to cached location if permission denied
+ * 4. Ask user for manual location input if all else fails
+ */
+export async function getQiblaDirection(manualLat?: number, manualLng?: number): Promise<QiblaData> {
+  console.log('[QiblaService] Request:', { manualLat, manualLng });
+
+  // If manual location provided, use it
+  if (manualLat !== undefined && manualLng !== undefined) {
+    console.log('[QiblaService] Using manual location');
+    const data = calculateQiblaFromCoords(manualLat, manualLng);
+    cacheLocation(data);
+    return data;
+  }
+
+  // Try to get geolocation
+  if (!navigator.geolocation) {
+    console.warn('[QiblaService] Geolocation not supported');
+    const cached = getCachedLocation();
+    if (cached) {
+      console.log('[QiblaService] Using cached location');
+      return cached;
+    }
+
+    throw {
+      code: 0,
+      message: 'Geolocation not supported by your browser. Please enter your location manually.',
+      canRetry: false,
+    } as GeolocationError;
+  }
+
+  // Wrap geolocation in promise with proper timeout
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      console.warn('[QiblaService] Geolocation timeout');
+      const cached = getCachedLocation();
+      if (cached) {
+        console.log('[QiblaService] Using cached location after timeout');
+        resolve(cached);
+      } else {
+        reject({
+          code: -1,
+          message: 'Location request timed out. Please try again or enter manually.',
+          canRetry: true,
+        } as GeolocationError);
+      }
+    }, 12000); // 12 second timeout
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
-        const qibla = calculateQiblaAngle(latitude, longitude);
-        const distance = calculateDistance(latitude, longitude, KAABA_LAT, KAABA_LNG);
-
-        resolve({
-          angle: qibla,
-          direction: getDirectionName(qibla),
-          distance,
-          userLat: latitude,
-          userLng: longitude,
-          lastUpdated: new Date(),
+        clearTimeout(timeoutId);
+        console.log('[QiblaService] Location obtained:', {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
         });
+
+        try {
+          const data = calculateQiblaFromCoords(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          cacheLocation(data);
+          resolve(data);
+        } catch (err) {
+          console.error('[QiblaService] Calculation error:', err);
+          reject({
+            code: -2,
+            message: 'Error calculating Qibla direction.',
+            canRetry: true,
+          } as GeolocationError);
+        }
       },
       (error) => {
-        const errorMessage =
-          error.code === error.PERMISSION_DENIED
-            ? 'Location permission denied. Please enable location access.'
-            : error.code === error.POSITION_UNAVAILABLE
-              ? 'Location information is unavailable.'
-              : 'Failed to get your location. Please try again.';
+        clearTimeout(timeoutId);
+        console.warn('[QiblaService] Geolocation error:', error);
+
+        // Try cached location first for any error
+        const cached = getCachedLocation();
+        if (cached) {
+          console.log('[QiblaService] Using cached location after error');
+          resolve(cached);
+          return;
+        }
+
+        // Handle specific errors
+        let errorMessage = 'Failed to get your location.';
+
+        if (error.code === error.PERMISSION_DENIED) {
+          errorMessage =
+            'Location permission denied. Please enable it in browser settings or enter your location manually.';
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          errorMessage =
+            'Location information is unavailable. Please enter your location manually.';
+        } else if (error.code === error.TIMEOUT) {
+          errorMessage = 'Location request timed out. Please try again or enter manually.';
+        }
 
         reject({
           code: error.code,
           message: errorMessage,
-        });
+          canRetry: true,
+        } as GeolocationError);
+      },
+      {
+        timeout: 10000,
+        enableHighAccuracy: false,
+        maximumAge: 300000, // 5 minutes max age
       }
     );
   });
@@ -166,4 +305,30 @@ export function getDirectionColor(direction: string): string {
     NNW: 'from-pink-500 to-blue-600',
   };
   return colors[direction] || 'from-blue-400 to-blue-600';
+}
+
+/**
+ * Get debug info for troubleshooting
+ */
+export function getDebugInfo(): Record<string, any> {
+  return {
+    geolocationSupported: !!navigator.geolocation,
+    localStorageAvailable: !!localStorage,
+    cacheData: getCachedLocation(),
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * Clear cache manually
+ */
+export function clearLocationCache(): void {
+  try {
+    if (localStorage) {
+      localStorage.removeItem(CACHE_KEY);
+      console.log('[QiblaService] Cache cleared');
+    }
+  } catch (err) {
+    console.warn('[QiblaService] Error clearing cache:', err);
+  }
 }

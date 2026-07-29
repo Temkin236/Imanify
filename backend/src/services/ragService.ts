@@ -1,10 +1,12 @@
 import amharicQuranData from '../data/amharic_quran.json' with { type: 'json' };
-import { RagAzkarMatch, RagContextResult, RagQuranMatch } from '../types.js';
+import { RagAzkarMatch, RagContextResult, RagHadithMatch, RagQuranMatch } from '../types.js';
 import azkarService from './azkarService.js';
+import islamicRefService from './islamicReferenceService.js';
 
 interface QuranRecord {
   surah: number;
   ayah: number;
+  surahName?: string;
   text_ar?: string;
   text_en?: string;
   text_am?: string;
@@ -56,7 +58,27 @@ class RagService {
   async getContext(question: string): Promise<RagContextResult> {
     const keywords = this.tokenize(question);
 
-    // Score local Amharic Quran data
+    // Verified Quran + Hadith from reference library (exact citations)
+    const verified = islamicRefService.lookupReferences(question);
+
+    const verifiedQuran: RagQuranMatch[] = verified.quran.map((q) => ({
+      surah: q.surah,
+      ayah: q.ayah,
+      arabic: q.arabic,
+      english: q.english,
+      amharic: q.amharic || ''
+    }));
+
+    const verifiedHadith: RagHadithMatch[] = verified.hadith.map((h) => ({
+      id: h.id,
+      english: h.english,
+      narrator: h.narrator,
+      source: h.source,
+      grade: h.grade,
+      arabic: h.arabic
+    }));
+
+    // Score local Amharic Quran data (supplement)
     const scoredQuran: ScoredItem<RagQuranMatch>[] = this.amharicData
       .map((entry) => {
         const combined = `${entry.text_ar || ''} ${entry.text_en || ''} ${entry.text_am || ''}`;
@@ -76,6 +98,12 @@ class RagService {
       .filter((entry) => entry.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 5);
+
+    // Merge verified + keyword-matched quran (dedupe by surah:ayah)
+    const quranMap = new Map<string, RagQuranMatch>();
+    for (const q of [...verifiedQuran, ...scoredQuran.map((e) => e.item)]) {
+      quranMap.set(`${q.surah}:${q.ayah}`, q);
+    }
 
     // Score Azkar
     const azkar = await azkarService.getAll();
@@ -100,8 +128,9 @@ class RagService {
       .slice(0, 5);
 
     return {
-      quran: scoredQuran.map((entry) => entry.item).slice(0, 3),
-      azkar: scoredAzkar.map((entry) => entry.item).slice(0, 2)
+      quran: [...quranMap.values()].slice(0, 4),
+      azkar: scoredAzkar.map((entry) => entry.item).slice(0, 2),
+      hadith: verifiedHadith.slice(0, 3)
     };
   }
 }

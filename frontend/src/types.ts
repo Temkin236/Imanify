@@ -22,10 +22,12 @@ export interface AzkarItem {
   title_en: string;
   title_am: string;
   arabic: string;
+  transliteration?: string;
   english: string;
   amharic: string;
   count: number;
   reference?: string;
+  reward?: string;
 }
 
 export interface PrayerTime {

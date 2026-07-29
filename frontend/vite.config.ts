@@ -76,7 +76,9 @@ export default defineConfig(({mode}) => {
           ],
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+          globPatterns: isDev 
+            ? ['**/*.{js}'] // Only cache JS in dev to avoid glob pattern warnings
+            : ['**/*.{js,css,html,ico,png,svg}'], // Full patterns for production
           globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
           runtimeCaching: [
             {
@@ -147,6 +149,12 @@ export default defineConfig(({mode}) => {
       // HMR can be disabled via DISABLE_HMR environment variable.
       // Keep this toggle to support environments where file watching must be limited.
       hmr: process.env.DISABLE_HMR !== 'true',
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+        },
+      },
     },
   };
 });

@@ -108,8 +108,8 @@ export const PWAInstallButton = () => {
   // Show installation guide card
   if (showGuide) {
     return (
-      <div className="fixed bottom-28 right-4 sm:right-6 z-40 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white rounded-2xl shadow-2xl p-5 sm:p-6 max-w-sm border border-emerald-400/30 backdrop-blur-sm">
+      <div className="fixed bottom-above-nav left-3 right-3 sm:left-auto sm:right-6 z-30 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white rounded-2xl shadow-2xl p-4 sm:p-6 max-w-full sm:max-w-sm border border-emerald-400/30 backdrop-blur-sm">
           {/* Close Button */}
           <button
             onClick={handleDismiss}
@@ -182,8 +182,8 @@ export const PWAInstallButton = () => {
 
   // Show install button card
   return (
-    <div className="fixed bottom-28 right-4 sm:right-6 z-40 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-2xl shadow-2xl p-4 sm:p-5 max-w-xs border border-emerald-400/30 backdrop-blur-sm">
+    <div className="fixed bottom-above-nav left-3 right-3 sm:left-auto sm:right-6 z-30 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-2xl shadow-2xl p-3 sm:p-5 max-w-full sm:max-w-xs border border-emerald-400/30 backdrop-blur-sm">
         {/* Close Button */}
         <button
           onClick={handleDismiss}

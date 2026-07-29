@@ -102,9 +102,9 @@ export const QuranReader: React.FC = () => {
     const verses = selectedSurah ? selectedSurah.verses : juzVerses;
 
     return (
-      <div className={`space-y-6 transition-all duration-1000 ${isDistractionFree ? 'fixed inset-0 z-[90] bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 p-8 overflow-y-auto no-scrollbar' : 'rounded-[3rem] p-6 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 border border-white/5'}`}>
+      <div className={`space-y-4 sm:space-y-6 transition-all duration-1000 min-w-0 ${isDistractionFree ? 'fixed inset-0 z-[90] bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 p-4 sm:p-8 overflow-y-auto no-scrollbar pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]' : 'rounded-2xl sm:rounded-[3rem] p-4 sm:p-6 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 border border-white/5'}`}>
         {/* Reader Header */}
-        <div className={`flex items-center justify-between sticky top-20 z-40 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 backdrop-blur-xl py-4 px-4 rounded-[2rem] border border-white/5 shadow-2xl transition-all ${isDistractionFree ? 'top-4' : ''}`}>
+        <div className={`flex items-center justify-between gap-2 sticky-below-header z-40 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 backdrop-blur-xl py-3 sm:py-4 px-3 sm:px-4 rounded-2xl sm:rounded-[2rem] border border-white/5 shadow-2xl transition-all ${isDistractionFree ? '!top-4' : ''}`}>
           <button 
             onClick={() => {
               if (isDistractionFree) setIsDistractionFree(false);
@@ -117,8 +117,8 @@ export const QuranReader: React.FC = () => {
           >
             <ChevronLeft size={24} />
           </button>
-          <div className="text-center">
-            <h2 className="text-3xl font-bold arabic-text text-gold-400 drop-shadow-md">{title}</h2>
+          <div className="text-center min-w-0 flex-1 px-1">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold arabic-text text-gold-400 drop-shadow-md truncate">{title}</h2>
             {!isDistractionFree && (
               <p className="text-[10px] text-white/40 uppercase tracking-[0.3em] font-black mt-1">{subTitle}</p>
             )}
@@ -144,7 +144,7 @@ export const QuranReader: React.FC = () => {
         </div>
 
         {/* Verses List */}
-        <div className={`space-y-20 pb-32 max-w-3xl mx-auto ${isDistractionFree ? 'pt-12' : ''}`}>
+        <div className={`space-y-12 sm:space-y-20 pb-24 sm:pb-32 max-w-3xl mx-auto min-w-0 ${isDistractionFree ? 'pt-8 sm:pt-12' : ''}`}>
           {verses.map((verse) => (
             <motion.div 
               key={verse.id}
@@ -153,29 +153,30 @@ export const QuranReader: React.FC = () => {
               viewport={{ once: true, margin: "-100px" }}
               className="space-y-10 group relative"
             >
-              <div className="flex items-center justify-between border-b border-white/5 pb-6">
-                <div className="flex items-center gap-4">
-                  <span className="w-12 h-12 rounded-2xl bg-gold-500/10 text-gold-400 flex items-center justify-center text-sm font-black border border-gold-500/20 shadow-xl shadow-gold-500/5 rotate-3 group-hover:rotate-0 transition-transform">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-white/5 pb-4 sm:pb-6">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 min-w-0">
+                  <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gold-500/10 text-gold-400 flex items-center justify-center text-xs sm:text-sm font-black border border-gold-500/20 shadow-xl shadow-gold-500/5 shrink-0">
                     {verse.number}
                   </span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <button 
                       onClick={() => handleExplain(verse)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gold-500/10 border border-gold-500/20 rounded-2xl text-[10px] font-black text-gold-400 uppercase tracking-widest hover:bg-gold-500/20 hover:border-gold-500/40 transition-all shadow-sm"
+                      className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gold-500/10 border border-gold-500/20 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black text-gold-400 uppercase tracking-widest hover:bg-gold-500/20 transition-all"
                     >
                       <Sparkles size={14} />
                       Reflect
                     </button>
                     <button 
                       onClick={() => setShowAmharicReflection(showAmharicReflection === verse.number ? null : verse.number)}
-                      className={`flex items-center gap-2 px-4 py-2 border rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${showAmharicReflection === verse.number ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 border-white/10 text-white/40 hover:text-white hover:from-islamic-green-800/60 hover:to-islamic-green-900/60'}`}
+                      className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 border rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all ${showAmharicReflection === verse.number ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 border-white/10 text-white/40 hover:text-white'}`}
                     >
                       <Headphones size={14} />
-                      Amharic Voice
+                      <span className="hidden min-[380px]:inline">Amharic Voice</span>
+                      <span className="min-[380px]:hidden">Voice</span>
                     </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 opacity-20 group-hover:opacity-100 transition-all">
+                <div className="flex items-center gap-2 sm:gap-3 opacity-100 sm:opacity-20 sm:group-hover:opacity-100 transition-all flex-wrap">
                   {verse.audioUrl && (
                     <button 
                       onClick={() => new Audio(verse.audioUrl).play()}
@@ -252,18 +253,18 @@ export const QuranReader: React.FC = () => {
 
         {/* Font Adjuster Floating - Hidden in Distraction Free */}
         {!isDistractionFree && (
-          <div className="fixed bottom-32 right-8 z-50 flex flex-col gap-4">
+          <div className="fixed bottom-fab right-3 sm:right-6 z-40 flex flex-col gap-2 sm:gap-4">
             <button 
               onClick={() => setFontSize(prev => Math.min(prev + 4, 48))}
-              className="w-14 h-14 bg-gradient-to-br from-islamic-green-800/60 to-islamic-green-900/60 backdrop-blur-xl rounded-2xl border border-white/10 flex items-center justify-center shadow-2xl text-gold-400 hover:scale-110 transition-all hover:from-islamic-green-800/80 hover:to-islamic-green-900/80"
+              className="w-11 h-11 sm:w-14 sm:h-14 bg-gradient-to-br from-islamic-green-800/60 to-islamic-green-900/60 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 flex items-center justify-center shadow-2xl text-gold-400 hover:scale-110 transition-all"
             >
-              <span className="font-bold text-lg">A+</span>
+              <span className="font-bold text-sm sm:text-lg">A+</span>
             </button>
             <button 
               onClick={() => setFontSize(prev => Math.max(prev - 4, 16))}
-              className="w-14 h-14 bg-gradient-to-br from-islamic-green-800/60 to-islamic-green-900/60 backdrop-blur-xl rounded-2xl border border-white/10 flex items-center justify-center shadow-2xl text-gold-400 hover:scale-110 transition-all hover:from-islamic-green-800/80 hover:to-islamic-green-900/80"
+              className="w-11 h-11 sm:w-14 sm:h-14 bg-gradient-to-br from-islamic-green-800/60 to-islamic-green-900/60 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 flex items-center justify-center shadow-2xl text-gold-400 hover:scale-110 transition-all"
             >
-              <span className="font-bold text-lg">A-</span>
+              <span className="font-bold text-sm sm:text-lg">A-</span>
             </button>
           </div>
         )}
@@ -277,7 +278,7 @@ export const QuranReader: React.FC = () => {
       <section>
         <button 
           onClick={() => handleSurahClick(surahs[0])}
-          className="w-full bg-gradient-to-r from-islamic-green-800/40 to-islamic-green-900/40 p-8 rounded-[2.8rem] border border-white/5 flex items-center justify-between group transition-all hover:bg-islamic-green-800/60 shadow-xl"
+          className="w-full bg-gradient-to-r from-islamic-green-800/40 to-islamic-green-900/40 p-5 sm:p-8 rounded-2xl sm:rounded-[2.8rem] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group transition-all hover:bg-islamic-green-800/60 shadow-xl"
         >
           <div className="flex items-center gap-6">
             <div className="w-16 h-16 bg-gold-500/20 rounded-[1.8rem] flex items-center justify-center text-gold-400 group-hover:rotate-6 transition-transform">
@@ -320,7 +321,7 @@ export const QuranReader: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search Surah, Verse, or Topic..." 
-              className="w-full bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 border border-white/5 rounded-[2.5rem] py-6 pl-16 pr-8 focus:outline-none focus:border-gold-500/30 focus:bg-islamic-green-800/60 transition-all shadow-inner text-lg"
+              className="w-full bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 border border-white/5 rounded-2xl sm:rounded-[2.5rem] py-4 sm:py-6 pl-12 sm:pl-16 pr-4 sm:pr-8 focus:outline-none focus:border-gold-500/30 transition-all shadow-inner text-base sm:text-lg"
             />
           </div>
 
@@ -329,7 +330,7 @@ export const QuranReader: React.FC = () => {
               <button
                 key={surah.id}
                 onClick={() => handleSurahClick(surah)}
-                className="flex items-center justify-between p-8 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 rounded-[2.8rem] border border-white/5 hover:bg-islamic-green-800/60 transition-all group relative overflow-hidden shadow-lg"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-8 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 rounded-2xl sm:rounded-[2.8rem] border border-white/5 hover:bg-islamic-green-800/60 transition-all group relative overflow-hidden shadow-lg min-w-0"
               >
                 <div className="flex items-center gap-6 relative z-10">
                   <div className="w-16 h-16 rounded-[1.8rem] bg-gold-500/10 flex items-center justify-center text-base font-black text-gold-400 group-hover:bg-gold-500 group-hover:text-islamic-green-950 transition-all rotate-3 group-hover:rotate-0 shadow-xl shadow-gold-500/5">
@@ -340,7 +341,7 @@ export const QuranReader: React.FC = () => {
                     <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-black mt-1">{surah.revelationType} • {surah.versesCount} Verses</p>
                   </div>
                 </div>
-                <span className="arabic-text text-4xl text-gold-400/80 group-hover:text-gold-400 transition-colors relative z-10 drop-shadow-md">{surah.name}</span>
+                <span className="arabic-text text-2xl sm:text-3xl md:text-4xl text-gold-400/80 group-hover:text-gold-400 transition-colors relative z-10 drop-shadow-md self-end sm:self-auto">{surah.name}</span>
                 
                 {/* Subtle Hover Decoration */}
                 <div className="absolute right-0 bottom-0 opacity-0 group-hover:opacity-[0.03] transition-opacity pointer-events-none rotate-12">
@@ -351,12 +352,12 @@ export const QuranReader: React.FC = () => {
           </div>
         </>
       ) : (
-        <div className="grid grid-cols-3 gap-4 px-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 px-2">
           {[...Array(30)].map((_, i) => (
             <button
               key={i + 1}
               onClick={() => handleJuzClick(i + 1)}
-              className="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 rounded-[2.5rem] border border-white/5 hover:bg-islamic-green-800/60 transition-all group shadow-lg"
+              className="flex flex-col items-center justify-center p-4 sm:p-8 bg-gradient-to-br from-islamic-green-800/40 to-islamic-green-900/40 rounded-2xl sm:rounded-[2.5rem] border border-white/5 hover:bg-islamic-green-800/60 transition-all group shadow-lg"
             >
               <span className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Juz</span>
               <span className="text-3xl font-black text-gold-400 group-hover:scale-110 transition-transform">{i + 1}</span>

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { getHomeSnapshot, HomeSnapshot } from '../services/homeService';
 import { TimeUntil } from '../services/prayerService';
+import { useThemeClasses } from '../hooks/useThemeClasses';
 
 interface HomeProps {
   setActiveTab: (tab: string) => void;
@@ -72,6 +73,7 @@ function getTimeUntil(targetHHMM: string): TimeUntil {
 }
 
 export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak }) => {
+  const tc = useThemeClasses();
   const [snapshot, setSnapshot] = useState<HomeSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -121,15 +123,15 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
   const nextPrayerTime = snapshot?.prayerData.nextPrayer.time || '--:--';
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-10">
-      <section className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-1 sm:px-2 relative z-10">
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-2">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">{greeting.text}</h2>
-          <p className="text-gold-400 text-sm md:text-base font-medium tracking-wide">{greeting.sub}</p>
+    <div className="space-y-5 sm:space-y-8 min-w-0">
+      <section className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-0 sm:px-2 relative z-10">
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-2 min-w-0">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">{greeting.text}</h2>
+          <p className={`${tc.accent} text-sm md:text-base font-medium tracking-wide`}>{greeting.sub}</p>
         </motion.div>
 
-        <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-gold-500/30 bg-gold-500/10 text-gold-400">
+        <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl border ${tc.accentBg}`}>
             <TrendingUp size={14} />
             <span className="text-[11px] font-bold uppercase tracking-[0.14em]">🔥 {streak} Day Streak</span>
           </div>
@@ -139,15 +141,15 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
             <span className="text-[11px] font-bold uppercase tracking-[0.14em]">{hijriLabel}</span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5">
-            <span className="text-[10px] font-bold text-white/50 uppercase tracking-wider">Season</span>
-            <span className="text-xs font-bold text-emerald-300">{snapshot?.weather.season || '...'}</span>
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${tc.surface} ${tc.textMuted}`}>
+            <span className="text-[10px] font-bold uppercase tracking-wider">Season</span>
+            <span className={`text-xs font-bold ${tc.isDarkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>{snapshot?.weather.season || '...'}</span>
           </div>
         </div>
       </section>
 
       {error && (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-200 text-sm flex items-center gap-2">
+        <div className={`rounded-2xl px-4 py-3 text-sm flex items-center gap-2 ${tc.error}`}>
           <AlertCircle size={16} />
           {error}
         </div>
@@ -157,7 +159,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
         <motion.button
           whileHover={{ y: -2 }}
           onClick={() => setActiveTab('quran')}
-          className="w-full bg-islamic-green-900/40 border border-white/10 p-5 rounded-4xl flex items-center justify-between group hover:bg-islamic-green-800/40 transition-all shadow-xl"
+          className={`w-full ${tc.surfaceStrong} ${tc.surfaceHover} p-5 rounded-4xl flex items-center justify-between group transition-all shadow-xl`}
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gold-500/10 rounded-2xl flex items-center justify-center text-gold-400">
@@ -198,7 +200,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
         </button>
       </section>
 
-      <section className="bg-linear-to-br from-islamic-green-800 to-islamic-green-900 rounded-4xl sm:rounded-[2.8rem] p-5 sm:p-8 shadow-2xl border border-white/10 relative overflow-hidden">
+      <section className={`${tc.hero} rounded-4xl sm:rounded-[2.8rem] p-5 sm:p-8 shadow-2xl relative overflow-hidden ${tc.isDarkMode ? '' : 'light-card-shine'}`}>
         {loading ? (
           <div className="text-center py-10 flex flex-col items-center gap-4">
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
@@ -222,7 +224,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
               <button
                 onClick={() => setIsFasted(!isFasted)}
                 className={`self-start sm:self-auto flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl border transition-all ${
-                  isFasted ? 'bg-gold-500 border-gold-500 text-islamic-green-950' : 'bg-white/10 border-white/20 text-white/70'
+                  isFasted ? tc.pillActive : tc.pill
                 }`}
               >
                 {isFasted ? <CheckCircle2 size={16} /> : <Circle size={16} />}
@@ -231,7 +233,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
             </div>
 
             <div className="flex flex-col items-center gap-2 py-3">
-              <motion.span key={countdown.formatted} initial={{ scale: 0.98 }} animate={{ scale: 1 }} className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white to-white/50">
+              <motion.span key={countdown.formatted} initial={{ scale: 0.98 }} animate={{ scale: 1 }} className={`text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter tabular-nums ${tc.countdown}`}>
                 {countdown.formatted}
               </motion.span>
               <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.35em]">
@@ -239,15 +241,15 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
               </span>
             </div>
 
-            <div className="bg-black/20 rounded-2xl p-4 border border-gold-500/20">
+            <div className={`rounded-2xl p-4 ${tc.inset}`}>
               <p className="text-[10px] font-bold text-gold-400 mb-2 uppercase tracking-wider flex items-center gap-1">
                 <Sparkles size={12} /> Situational Hadith Reminder
               </p>
-              <p className="text-white/85 text-sm italic mb-2">"{snapshot?.reminder.hadithOrAthar || 'Keep your heart connected with Allah throughout the day.'}"</p>
+              <p className={`${tc.textBody} text-sm italic mb-2`}>"{snapshot?.reminder.hadithOrAthar || 'Keep your heart connected with Allah throughout the day.'}"</p>
               <p className="text-gold-300/80 text-xs font-semibold">{snapshot?.reminder.source || 'Daily reminder'}</p>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white/10 p-4 sm:p-5 rounded-4xl border border-white/10">
+            <div className={`flex flex-col sm:flex-row justify-between sm:items-center gap-4 ${tc.surface} p-4 sm:p-5 rounded-4xl`}>
               <div className="flex items-center gap-4 min-w-0">
                 <div className="w-12 h-12 bg-gold-500/10 rounded-2xl flex items-center justify-center text-gold-400">
                   <Sunset size={24} />
@@ -270,7 +272,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
       </section>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-        <div className="bg-white/5 rounded-[2.2rem] p-6 border border-white/10 flex flex-col gap-4 hover:bg-white/10 transition-colors">
+        <div className={`${tc.surface} rounded-[2.2rem] p-6 flex flex-col gap-4 ${tc.surfaceHover} transition-colors ${tc.isDarkMode ? '' : 'light-card-shine'}`}>
           <div className="flex justify-between items-start">
             <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400">
               <TrendingUp size={20} />
@@ -286,7 +288,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
           </div>
         </div>
 
-        <div className="bg-white/5 rounded-[2.5rem] p-6 border border-white/10 flex flex-col gap-4 hover:bg-white/10 transition-colors">
+        <div className={`${tc.surface} rounded-[2.5rem] p-6 flex flex-col gap-4 ${tc.surfaceHover} transition-colors ${tc.isDarkMode ? '' : 'light-card-shine'}`}>
           <div className="flex justify-between items-start">
             <div className="p-2.5 bg-gold-500/10 rounded-xl text-gold-400">
               <Heart size={20} />
@@ -301,7 +303,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
         </div>
       </section>
 
-      <section className="bg-white/5 rounded-4xl sm:rounded-[2.5rem] p-5 sm:p-7 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+      <section className={`${tc.surface} rounded-4xl sm:rounded-[2.5rem] p-5 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${tc.isDarkMode ? '' : 'light-card-shine'}`}>
         <div className="flex items-center gap-4 sm:gap-5 min-w-0">
           <div className="relative w-16 h-16 flex items-center justify-center">
             <div className="absolute inset-0 border-2 border-dashed border-white/15 rounded-full animate-[spin_20s_linear_infinite]" />
@@ -384,7 +386,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
 
       <AnimatePresence>
         {showReturnModal && (
-          <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-100 flex items-end sm:items-center justify-center p-3 sm:p-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -397,7 +399,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, isRamadanMode, streak 
               initial={{ opacity: 0, scale: 0.92, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              className="bg-islamic-green-900 w-full max-w-md rounded-[2.4rem] p-8 border border-white/10 relative z-10 text-center space-y-6"
+              className="bg-islamic-green-900 w-full max-w-md rounded-t-[2rem] sm:rounded-[2.4rem] p-6 sm:p-8 border border-white/10 relative z-10 text-center space-y-5 sm:space-y-6 max-h-[90dvh] overflow-y-auto"
             >
               <div className="w-16 h-16 bg-gold-500/10 rounded-full flex items-center justify-center text-gold-400 mx-auto">
                 <Heart size={34} fill="currentColor" className="opacity-30" />

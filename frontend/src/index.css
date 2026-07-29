@@ -15,6 +15,11 @@
   --color-gold-400: #e5c76b;
   --color-sunset-orange: #ff7e5f;
   --color-sunset-purple: #feb47b;
+
+  /* App chrome for calc() heights */
+  --app-header: 4.25rem;
+  --app-bottom-nav: 5.75rem;
+  --app-fab-offset: 1rem;
 }
 
 @layer base {
@@ -23,11 +28,20 @@
   #root {
     width: 100%;
     min-height: 100%;
+    overflow-x: hidden;
   }
 
-  body {
+  html[data-theme="dark"] body {
     @apply bg-islamic-green-950 text-white font-sans antialiased;
     background: linear-gradient(180deg, #0F3D2E 0%, #071A13 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  html[data-theme="light"] body {
+    @apply font-sans antialiased;
+    color: #0f3d2e;
+    background: linear-gradient(165deg, #fffdf9 0%, #faf6ef 38%, #f3ebe0 72%, #ebe3d6 100%);
     background-attachment: fixed;
     min-height: 100vh;
   }
@@ -43,6 +57,240 @@
 
   .accent-font {
     @apply font-accent;
+  }
+}
+
+/* ─── Light mode ambience ─── */
+.light-sky-gradient {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 214, 140, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(212, 175, 55, 0.12) 0%, transparent 50%),
+    linear-gradient(165deg, #fffdf9 0%, #faf6ef 45%, #f5efe6 100%);
+}
+
+.light-pattern {
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(15, 61, 46, 0.04) 0%, transparent 50%);
+}
+
+.light-card-shine {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 4px 24px rgba(15, 61, 46, 0.06),
+    0 12px 48px rgba(212, 175, 55, 0.04);
+}
+
+/* Light mode: remap common dark utilities app-wide */
+[data-theme="light"] .text-white {
+  color: #0f3d2e;
+}
+
+[data-theme="light"] .text-white\/85 {
+  color: rgb(15 61 46 / 0.88);
+}
+
+[data-theme="light"] .text-white\/70 {
+  color: rgb(15 61 46 / 0.72);
+}
+
+[data-theme="light"] .text-white\/60 {
+  color: rgb(15 61 46 / 0.62);
+}
+
+[data-theme="light"] .text-white\/50 {
+  color: rgb(15 61 46 / 0.55);
+}
+
+[data-theme="light"] .text-white\/40 {
+  color: rgb(15 61 46 / 0.45);
+}
+
+[data-theme="light"] .text-white\/30 {
+  color: rgb(15 61 46 / 0.35);
+}
+
+[data-theme="light"] .text-white\/25 {
+  color: rgb(15 61 46 / 0.3);
+}
+
+[data-theme="light"] .text-white\/20 {
+  color: rgb(15 61 46 / 0.25);
+}
+
+[data-theme="light"] .text-white\/80 {
+  color: rgb(15 61 46 / 0.82);
+}
+
+[data-theme="light"] .bg-white\/5 {
+  background-color: rgb(255 255 255 / 0.92);
+}
+
+[data-theme="light"] .bg-white\/10 {
+  background-color: rgb(255 252 247 / 0.95);
+}
+
+[data-theme="light"] .bg-white\/\[0\.03\] {
+  background-color: #ffffff;
+}
+
+[data-theme="light"] .bg-white\/\[0\.04\] {
+  background-color: #ffffff;
+}
+
+[data-theme="light"] .border-white\/5,
+[data-theme="light"] .border-white\/10,
+[data-theme="light"] .border-white\/20 {
+  border-color: rgb(15 61 46 / 0.1);
+}
+
+[data-theme="light"] .border-white\/\[0\.06\] {
+  border-color: rgb(15 61 46 / 0.08);
+}
+
+[data-theme="light"] .bg-islamic-green-900\/40,
+[data-theme="light"] .bg-islamic-green-900\/55 {
+  background-color: rgb(255 255 255 / 0.95);
+}
+
+[data-theme="light"] .bg-islamic-green-800\/40,
+[data-theme="light"] .bg-islamic-green-800\/50,
+[data-theme="light"] .bg-islamic-green-800\/60 {
+  background-color: rgb(255 252 247 / 0.98);
+}
+
+[data-theme="light"] .bg-islamic-green-900 {
+  background-color: #f5efe6;
+}
+
+[data-theme="light"] .bg-black\/20 {
+  background-color: rgb(245 230 200 / 0.45);
+}
+
+[data-theme="light"] .text-gold-400 {
+  color: #b8860b;
+}
+
+[data-theme="light"] .text-gold-300\/80,
+[data-theme="light"] .text-gold-400\/60,
+[data-theme="light"] .text-gold-400\/70 {
+  color: rgb(184 134 11 / 0.85);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f5efe6;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgb(184 134 11 / 0.35);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgb(184 134 11 / 0.55);
+}
+
+[data-theme="light"] .mosque-silhouette {
+  opacity: 0.04;
+  filter: sepia(0.3) hue-rotate(80deg);
+}
+
+[data-theme="light"] .card-natural {
+  @apply border-islamic-green-900/10;
+  background: rgb(255 255 255 / 0.95);
+  box-shadow: 0 4px 24px rgb(15 61 46 / 0.06);
+}
+
+[data-theme="light"] .bg-islamic-green-900\/50,
+[data-theme="light"] .bg-islamic-green-900\/80 {
+  background-color: rgb(255 255 255 / 0.92);
+}
+
+[data-theme="light"] .from-islamic-green-800,
+[data-theme="light"] .from-islamic-green-800\/40,
+[data-theme="light"] .from-islamic-green-800\/50 {
+  --tw-gradient-from: #fffdf9;
+}
+
+[data-theme="light"] .to-islamic-green-900,
+[data-theme="light"] .to-islamic-green-900\/40,
+[data-theme="light"] .to-islamic-green-950\/50 {
+  --tw-gradient-to: #faf0e4;
+}
+
+[data-theme="light"] .text-emerald-300,
+[data-theme="light"] .text-emerald-300\/70 {
+  color: rgb(5 100 70 / 0.85);
+}
+
+[data-theme="light"] .text-emerald-400 {
+  color: rgb(5 120 80);
+}
+
+[data-theme="light"] .text-blue-400 {
+  color: rgb(37 99 235);
+}
+
+[data-theme="light"] .hover\:border-gold-500\/30:hover {
+  border-color: rgb(184 134 11 / 0.35);
+}
+
+[data-theme="light"] .glow-on-click:active {
+  box-shadow: 0 0 20px 5px rgba(184, 134, 11, 0.25);
+}
+
+/* ─── Responsive app shell ─── */
+.pb-app-nav {
+  padding-bottom: calc(var(--app-bottom-nav) + env(safe-area-inset-bottom, 0px) + 0.5rem);
+}
+
+.min-h-app-screen {
+  min-height: calc(100dvh - var(--app-header) - var(--app-bottom-nav) - env(safe-area-inset-bottom, 0px));
+}
+
+.h-app-chat {
+  height: calc(100dvh - var(--app-header) - var(--app-bottom-nav) - env(safe-area-inset-bottom, 0px) - 1rem);
+  max-height: calc(100dvh - var(--app-header) - var(--app-bottom-nav) - env(safe-area-inset-bottom, 0px) - 1rem);
+}
+
+.bottom-above-nav {
+  bottom: calc(var(--app-bottom-nav) + env(safe-area-inset-bottom, 0px) + 0.5rem);
+}
+
+.bottom-fab {
+  bottom: calc(var(--app-bottom-nav) + env(safe-area-inset-bottom, 0px) + 0.75rem);
+}
+
+.sticky-below-header {
+  top: calc(var(--app-header) + env(safe-area-inset-top, 0px));
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  html[data-theme="dark"] body,
+  html[data-theme="light"] body {
+    background-attachment: scroll;
+  }
+
+  .mosque-silhouette {
+    height: 18vh;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --app-bottom-nav: 4.75rem;
   }
 }
 

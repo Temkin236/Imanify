@@ -5,13 +5,18 @@ import { QiblaCompass } from './QiblaCompass';
 import { PrayerTimesList } from './PrayerTimesList';
 
 export const PrayerQibla: React.FC = () => {
-  const [expandedSection, setExpandedSection] = useState<'qibla' | 'prayer' | 'both'>('both');
+  const [expandedSection, setExpandedSection] = useState<'qibla' | 'prayer' | 'both'>(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
+      return 'qibla';
+    }
+    return 'both';
+  });
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-4 sm:space-y-6 min-w-0">
       {/* Header */}
-      <header className="px-2">
-        <h2 className="text-3xl font-bold tracking-tight mb-1">Prayer & Qibla</h2>
+      <header className="px-1 sm:px-2">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1">Prayer & Qibla</h2>
         <p className="text-white/50 text-sm">Find your spiritual direction</p>
       </header>
 
@@ -53,7 +58,7 @@ export const PrayerQibla: React.FC = () => {
               exit={{ opacity: 0, x: -20 }}
               className="md:col-span-1"
             >
-              <div className="sticky top-20">
+              <div className="md:sticky sticky-below-header">
                 <div className="flex items-center gap-2 mb-4 md:hidden">
                   <Compass size={20} className="text-gold-400" />
                   <h3 className="text-lg font-bold">Qibla Direction</h3>
@@ -74,7 +79,7 @@ export const PrayerQibla: React.FC = () => {
               exit={{ opacity: 0, x: 20 }}
               className="md:col-span-1"
             >
-              <div className="sticky top-20">
+              <div className="md:sticky sticky-below-header">
                 <div className="flex items-center gap-2 mb-4 md:hidden">
                   <Clock size={20} className="text-gold-400" />
                   <h3 className="text-lg font-bold">Prayer Times</h3>

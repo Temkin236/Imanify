@@ -188,11 +188,11 @@ export const Calendar: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="space-y-4 min-w-0">
       {/* Header */}
-      <header className="px-2 flex justify-between items-center">
+      <header className="px-1 sm:px-2 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
         <div>
-          <h2 className="text-3xl font-bold">Hijri Calendar</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">Hijri Calendar</h2>
           <p className="text-xs text-gold-400">{hijriData?.hijriDay} {hijriData?.hijriMonthEn} {hijriData?.hijriYear} AH</p>
         </div>
         <div className="flex gap-1">
@@ -226,18 +226,18 @@ export const Calendar: React.FC = () => {
           </div>
 
           {/* Day abbreviations */}
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-0.5 sm:gap-1 md:gap-2">
             {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className="text-center text-xs font-bold text-gold-400 uppercase tracking-widest">
+              <div key={i} className="text-center text-[9px] sm:text-xs font-bold text-gold-400 uppercase tracking-wider sm:tracking-widest">
                 {DAY_ABBR[language][i]}
               </div>
             ))}
           </div>
 
           {/* Compact Calendar Grid */}
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-0.5 sm:gap-1 md:gap-2">
             {days.map((day, i) => {
-              if (day === null) return <div key={`empty-${i}`} className="h-9" />;
+              if (day === null) return <div key={`empty-${i}`} className="aspect-square" />;
 
               const today = isToday(day);
               const isSelected = selectedDay === day;
@@ -251,7 +251,7 @@ export const Calendar: React.FC = () => {
                   whileHover={{ scale: 1.08 }}
                   whileTap={{ scale: 0.85 }}
                   onClick={() => setSelectedDay(day)}
-                  className={`h-9 w-9 text-sm font-bold rounded transition-all border relative flex items-center justify-center ${
+                  className={`aspect-square w-full max-w-[2.5rem] sm:max-w-none mx-auto text-xs sm:text-sm font-bold rounded transition-all border relative flex items-center justify-center ${
                     isSelected
                       ? 'bg-gold-500 text-islamic-green-950 border-gold-400 shadow-lg'
                       : today
@@ -370,7 +370,7 @@ export const Calendar: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-emerald-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50"
+            className="fixed bottom-above-nav left-1/2 transform -translate-x-1/2 bg-emerald-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg shadow-lg flex items-center gap-2 z-50 text-sm max-w-[90vw] text-center"
           >
             <span>📿 Azkar section available in sidebar</span>
           </motion.div>
@@ -380,7 +380,7 @@ export const Calendar: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50"
+            className="fixed bottom-above-nav left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg shadow-lg flex items-center gap-2 z-50 text-sm max-w-[90vw] text-center"
           >
             <span>🤲 Recite Dua for this day</span>
           </motion.div>

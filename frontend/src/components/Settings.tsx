@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Moon, Bell, Globe, Shield, LogOut, ChevronRight, Sparkles } from 'lucide-react';
+import { Moon, Bell, Globe, Shield, LogOut, ChevronRight, Sparkles, Sun } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { useThemeClasses } from '../hooks/useThemeClasses';
 
 interface SettingsProps {
   isRamadanMode: boolean;
@@ -9,37 +11,66 @@ interface SettingsProps {
 }
 
 export const Settings: React.FC<SettingsProps> = ({ isRamadanMode, setIsRamadanMode, onLogout }) => {
+  const { isDarkMode, toggleTheme } = useTheme();
+  const tc = useThemeClasses();
+
   return (
-    <div className="space-y-8 pb-20">
-      <header className="px-2">
-        <h2 className="text-4xl font-bold tracking-tight">Settings</h2>
-        <p className="accent-font text-gold-400 text-xl">Personalize your journey</p>
+    <div className="space-y-6 sm:space-y-8 min-w-0">
+      <header className="px-1 sm:px-2">
+        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Settings</h2>
+        <p className={`accent-font ${tc.accent} text-xl`}>Personalize your journey</p>
       </header>
 
       <section className="space-y-4">
-        <div className="bg-white/5 rounded-[2.5rem] p-6 border border-white/5 space-y-6">
+        <div className={`${tc.surface} rounded-[2.5rem] p-6 space-y-6 ${tc.isDarkMode ? '' : 'light-card-shine'}`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gold-500/10 rounded-2xl flex items-center justify-center text-gold-400">
-                <Moon size={24} fill={isRamadanMode ? "currentColor" : "none"} />
+              <div className={`w-12 h-12 ${tc.isDarkMode ? 'bg-white/5' : 'bg-amber-50'} rounded-2xl flex items-center justify-center ${tc.accent}`}>
+                {isDarkMode ? <Moon size={24} /> : <Sun size={24} />}
+              </div>
+              <div>
+                <h3 className="font-bold text-lg tracking-tight">Appearance</h3>
+                <p className={`text-[10px] ${tc.textSubtle} uppercase tracking-widest font-bold`}>
+                  {isDarkMode ? 'Dark mode' : 'Light mode'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={toggleTheme}
+              className={`w-14 h-8 rounded-full transition-all relative ${isDarkMode ? 'bg-gold-500' : 'bg-amber-400'}`}
+              aria-label="Toggle light/dark mode"
+            >
+              <motion.div
+                animate={{ x: isDarkMode ? 24 : 4 }}
+                className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg"
+              />
+            </button>
+          </div>
+
+          <div className={`h-px ${tc.divider} w-full`} />
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 ${tc.accentBg} rounded-2xl flex items-center justify-center`}>
+                <Moon size={24} fill={isRamadanMode ? 'currentColor' : 'none'} />
               </div>
               <div>
                 <h3 className="font-bold text-lg tracking-tight">Ramadan Mode</h3>
-                <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Immersive experience</p>
+                <p className={`text-[10px] ${tc.textSubtle} uppercase tracking-widest font-bold`}>Immersive experience</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => setIsRamadanMode(!isRamadanMode)}
-              className={`w-14 h-8 rounded-full transition-all relative ${isRamadanMode ? 'bg-gold-500' : 'bg-white/10'}`}
+              className={`w-14 h-8 rounded-full transition-all relative ${isRamadanMode ? 'bg-gold-500' : tc.isDarkMode ? 'bg-white/10' : 'bg-islamic-green-900/10'}`}
             >
-              <motion.div 
+              <motion.div
                 animate={{ x: isRamadanMode ? 24 : 4 }}
                 className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg"
               />
             </button>
           </div>
 
-          <div className="h-px bg-white/5 w-full" />
+          <div className={`h-px ${tc.divider} w-full`} />
 
           {[
             { icon: Bell, label: 'Notifications', sub: 'Prayer times & Azkar' },
@@ -49,29 +80,29 @@ export const Settings: React.FC<SettingsProps> = ({ isRamadanMode, setIsRamadanM
             <React.Fragment key={i}>
               <button className="w-full flex items-center justify-between group">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/40 group-hover:text-gold-400 transition-colors">
+                  <div className={`w-12 h-12 ${tc.isDarkMode ? 'bg-white/5 group-hover:bg-white/10' : 'bg-amber-50 group-hover:bg-amber-100'} rounded-2xl flex items-center justify-center ${tc.textSubtle} group-hover:text-amber-700 transition-colors`}>
                     <item.icon size={24} />
                   </div>
                   <div className="text-left">
                     <h3 className="font-bold text-lg tracking-tight">{item.label}</h3>
-                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">{item.sub}</p>
+                    <p className={`text-[10px] ${tc.textSubtle} uppercase tracking-widest font-bold`}>{item.sub}</p>
                   </div>
                 </div>
-                <ChevronRight size={20} className="text-white/20 group-hover:text-gold-400 transition-colors" />
+                <ChevronRight size={20} className={`${tc.textFaint} ${tc.isDarkMode ? 'group-hover:text-gold-400' : 'group-hover:text-amber-700'} transition-colors`} />
               </button>
-              {i < 2 && <div className="h-px bg-white/5 w-full" />}
+              {i < 2 && <div className={`h-px ${tc.divider} w-full`} />}
             </React.Fragment>
           ))}
         </div>
       </section>
 
-      <section className="bg-gold-500/5 rounded-[2.5rem] p-8 border border-gold-500/10 relative overflow-hidden group">
+      <section className={`${tc.isDarkMode ? 'bg-gold-500/5 border-gold-500/10' : 'bg-amber-50/80 border-amber-200/50'} rounded-[2.5rem] p-8 border relative overflow-hidden group ${tc.isDarkMode ? '' : 'light-card-shine'}`}>
         <div className="relative z-10 flex flex-col items-center text-center gap-4">
           <div className="w-16 h-16 bg-gold-500/20 rounded-full flex items-center justify-center text-gold-400">
             <Sparkles size={32} />
           </div>
           <h3 className="text-xl font-bold tracking-tight">Imanify Premium</h3>
-          <p className="text-sm text-white/60 leading-relaxed">Unlock advanced analytics, high-quality recitations, and more.</p>
+          <p className={`text-sm ${tc.textMuted} leading-relaxed`}>Unlock advanced analytics, high-quality recitations, and more.</p>
           <button className="w-full py-4 bg-gold-500 text-islamic-green-950 font-bold rounded-2xl hover:bg-gold-400 transition-colors shadow-lg shadow-gold-500/20">
             Upgrade Now
           </button>
@@ -83,15 +114,15 @@ export const Settings: React.FC<SettingsProps> = ({ isRamadanMode, setIsRamadanM
 
       <button
         onClick={onLogout}
-        className="w-full flex items-center justify-center gap-3 py-6 text-rose-400/60 hover:text-rose-400 transition-colors font-bold text-sm uppercase tracking-widest"
+        className={`w-full flex items-center justify-center gap-3 py-6 transition-colors font-bold text-sm uppercase tracking-widest ${tc.isDarkMode ? 'text-rose-400/60 hover:text-rose-400' : 'text-rose-500/70 hover:text-rose-600'}`}
       >
         <LogOut size={20} />
         Sign Out
       </button>
 
       <div className="text-center space-y-2">
-        <p className="text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold">Imanify v1.0.0</p>
-        <p className="accent-font text-gold-500/20 text-sm">Made with love for the Ummah 🤲</p>
+        <p className={`text-[10px] ${tc.textFaint} uppercase tracking-[0.3em] font-bold`}>Imanify v1.0.0</p>
+        <p className={`accent-font ${tc.isDarkMode ? 'text-gold-500/20' : 'text-amber-600/30'} text-sm`}>Made with love for the Ummah 🤲</p>
       </div>
     </div>
   );

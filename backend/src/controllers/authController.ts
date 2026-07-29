@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { CustomRequest, ApiResponse } from '../types.js';
-import { getUser, createUser, userExists } from '../services/database.js';
+import { getUser, createUser, userExists, reloadDatabase } from '../services/database.js';
 
 // Simple token storage
 const tokenToEmailMap = new Map<string, string>();
@@ -13,6 +13,8 @@ export async function login(req: CustomRequest, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
 
+    console.log('[Auth] Login attempt for:', email);
+
     if (!email || !password) {
       res.status(400).json({
         success: false,
@@ -21,8 +23,14 @@ export async function login(req: CustomRequest, res: Response): Promise<void> {
       return;
     }
 
+    // Reload database to ensure we have latest user data
+    reloadDatabase();
+
     const user = getUser(email);
+    console.log('[Auth] User found:', !!user);
+
     if (!user || user.password !== password) {
+      console.log('[Auth] Login failed - invalid credentials');
       res.status(401).json({
         success: false,
         error: 'Invalid email or password'
@@ -32,6 +40,8 @@ export async function login(req: CustomRequest, res: Response): Promise<void> {
 
     const token = generateToken();
     tokenToEmailMap.set(token, email);
+
+    console.log('[Auth] Login successful:', email);
 
     res.json({
       success: true,
@@ -47,6 +57,7 @@ export async function login(req: CustomRequest, res: Response): Promise<void> {
       timestamp: new Date().toISOString()
     } as ApiResponse<any>);
   } catch (error) {
+    console.error('[Auth] Login error:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Login failed'
@@ -57,6 +68,8 @@ export async function login(req: CustomRequest, res: Response): Promise<void> {
 export async function register(req: CustomRequest, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
+
+    console.log('[Auth] Register attempt for:', email);
 
     if (!email || !password) {
       res.status(400).json({
@@ -74,7 +87,11 @@ export async function register(req: CustomRequest, res: Response): Promise<void>
       return;
     }
 
+    // Reload database to ensure we have latest data
+    reloadDatabase();
+
     if (userExists(email)) {
+      console.log('[Auth] Register failed - email already exists:', email);
       res.status(409).json({
         success: false,
         error: 'Email already registered'
@@ -85,6 +102,8 @@ export async function register(req: CustomRequest, res: Response): Promise<void>
     const newUser = createUser(email, password);
     const token = generateToken();
     tokenToEmailMap.set(token, email);
+
+    console.log('[Auth] Register successful:', email);
 
     res.status(201).json({
       success: true,
@@ -100,6 +119,7 @@ export async function register(req: CustomRequest, res: Response): Promise<void>
       timestamp: new Date().toISOString()
     } as ApiResponse<any>);
   } catch (error) {
+    console.error('[Auth] Register error:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Registration failed'

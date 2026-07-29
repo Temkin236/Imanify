@@ -2,20 +2,23 @@ services:
   - type: web
     name: imanify-backend
     runtime: node
-    runtimeVersion: 20
+    runtimeVersion: "20"
     region: oregon
     plan: free
     rootDir: backend
-    buildCommand: "npm install && npm run build"
-    startCommand: "node dist/server.js"
+    buildCommand: npm install && npm run build
+    startCommand: node dist/server.js
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 3000
-      - key: DATABASE_URL
-        value: "file:./data/app.db"
+        value: "3000"
       - key: CORS_ORIGIN
-        value: "https://imanify.onrender.com"
+        value: "https://imanify.vercel.app,https://imanify-git-main-temkin236.vercel.app,http://localhost:3001,http://localhost:5173"
+      - key: GROQ_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
       - key: GEMINI_API_KEY
         sync: false

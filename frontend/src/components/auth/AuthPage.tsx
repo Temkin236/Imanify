@@ -1,7 +1,9 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { Lock, Mail, Moon, ShieldCheck, Star } from 'lucide-react';
+import { Lock, Mail, Moon, ShieldCheck, Star, Sun } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import { useThemeClasses } from '../../hooks/useThemeClasses';
 
 interface AuthPageProps {
   mode: 'login' | 'register';
@@ -11,6 +13,8 @@ interface AuthPageProps {
 
 export function AuthPage({ mode, onSwitchMode, onSuccess }: AuthPageProps) {
   const { login, register } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
+  const tc = useThemeClasses();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -44,60 +48,81 @@ export function AuthPage({ mode, onSwitchMode, onSuccess }: AuthPageProps) {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-islamic-green-950 text-white">
-      <div className="absolute inset-0 bg-linear-to-b from-[#0F3D2E] via-[#0A2B21] to-[#071A13]" />
-      <div className="stars-layer">
-        {[...Array(80)].map((_, i) => (
-          <span
-            key={i}
-            className="star"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: `${1 + Math.random() * 2}px`,
-              height: `${1 + Math.random() * 2}px`,
-              '--duration': `${2 + Math.random() * 6}s`
-            } as React.CSSProperties}
-          />
-        ))}
-      </div>
+    <div className={`min-h-screen relative overflow-hidden ${isDarkMode ? 'bg-islamic-green-950 text-white' : 'light-sky-gradient text-islamic-green-950'}`}>
+      {isDarkMode ? (
+        <>
+          <div className="absolute inset-0 bg-linear-to-b from-[#0F3D2E] via-[#0A2B21] to-[#071A13]" />
+          <div className="stars-layer">
+            {[...Array(80)].map((_, i) => (
+              <span
+                key={i}
+                className="star"
+                style={{
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                  width: `${1 + Math.random() * 2}px`,
+                  height: `${1 + Math.random() * 2}px`,
+                  '--duration': `${2 + Math.random() * 6}s`,
+                } as React.CSSProperties}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="absolute inset-0 light-sky-gradient" />
+          <div className="absolute inset-0 light-pattern opacity-80" />
+        </>
+      )}
+
+      <button
+        onClick={toggleTheme}
+        className={`absolute top-5 right-5 z-20 p-2.5 rounded-2xl border transition-all ${tc.iconBtn}`}
+        aria-label="Toggle theme"
+      >
+        {isDarkMode ? <Sun size={20} className="text-gold-400" /> : <Moon size={20} className="text-amber-700" />}
+      </button>
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 16, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.45, ease: 'easeOut' }}
-          className="w-full max-w-md rounded-[2.5rem] border border-gold-500/20 bg-islamic-green-900/55 backdrop-blur-2xl shadow-2xl p-8"
+          className={`w-full max-w-md rounded-2xl sm:rounded-[2.5rem] border backdrop-blur-2xl shadow-2xl p-6 sm:p-8 ${
+            isDarkMode
+              ? 'border-gold-500/20 bg-islamic-green-900/55'
+              : 'border-amber-200/60 bg-white/90 light-card-shine'
+          }`}
         >
           <div className="flex items-center justify-center mb-6">
-            <div className="w-16 h-16 rounded-full bg-gold-500/20 border border-gold-500/40 flex items-center justify-center text-gold-400">
-              <Moon size={30} fill="currentColor" />
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center ${tc.accentBg}`}>
+              <Moon size={30} fill="currentColor" className={tc.accent} />
             </div>
           </div>
 
-          <h1 className="text-3xl font-black tracking-tight text-center">{title}</h1>
-          <p className="mt-2 text-sm text-white/70 text-center">{subtitle}</p>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-center">{title}</h1>
+          <p className={`mt-2 text-sm ${tc.textMuted} text-center`}>{subtitle}</p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <label className="block">
-              <span className="text-[11px] uppercase tracking-[0.2em] text-gold-400/80 font-bold">Email</span>
-              <div className="mt-2 flex items-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 focus-within:border-gold-500/40">
-                <Mail size={18} className="text-white/55" />
+              <span className={`text-[11px] uppercase tracking-[0.2em] ${tc.accent} font-bold opacity-80`}>Email</span>
+              <div className={`mt-2 flex items-center gap-2 rounded-2xl px-4 py-3 ${tc.input}`}>
+                <Mail size={18} className={tc.textMuted} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="you@example.com"
-                  className="w-full bg-transparent outline-none text-sm placeholder-white/30"
+                  className="w-full bg-transparent outline-none text-sm"
                 />
               </div>
             </label>
 
             <label className="block">
-              <span className="text-[11px] uppercase tracking-[0.2em] text-gold-400/80 font-bold">Password</span>
-              <div className="mt-2 flex items-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 focus-within:border-gold-500/40">
-                <Lock size={18} className="text-white/55" />
+              <span className={`text-[11px] uppercase tracking-[0.2em] ${tc.accent} font-bold opacity-80`}>Password</span>
+              <div className={`mt-2 flex items-center gap-2 rounded-2xl px-4 py-3 ${tc.input}`}>
+                <Lock size={18} className={tc.textMuted} />
                 <input
                   type="password"
                   required
@@ -105,13 +130,13 @@ export function AuthPage({ mode, onSwitchMode, onSuccess }: AuthPageProps) {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-transparent outline-none text-sm placeholder-white/30"
+                  className="w-full bg-transparent outline-none text-sm"
                 />
               </div>
             </label>
 
             {error && (
-              <div className="rounded-2xl border border-red-500/40 bg-red-500/15 px-4 py-3 text-red-200 text-sm">
+              <div className={`rounded-2xl px-4 py-3 text-sm ${tc.error}`}>
                 {error}
               </div>
             )}
@@ -119,7 +144,7 @@ export function AuthPage({ mode, onSwitchMode, onSuccess }: AuthPageProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 rounded-2xl bg-gold-500 text-islamic-green-950 font-bold py-3.5 hover:bg-gold-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full mt-2 rounded-2xl bg-gold-500 text-islamic-green-950 font-bold py-3.5 hover:bg-gold-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-gold-500/20"
             >
               {loading ? 'Please wait...' : mode === 'login' ? 'Login' : 'Register'}
             </button>
@@ -127,22 +152,22 @@ export function AuthPage({ mode, onSwitchMode, onSuccess }: AuthPageProps) {
 
           <button
             onClick={onSwitchMode}
-            className="mt-5 w-full text-sm text-white/70 hover:text-gold-400 transition-colors"
+            className={`mt-5 w-full text-sm ${tc.textMuted} ${isDarkMode ? 'hover:text-gold-400' : 'hover:text-amber-700'} transition-colors`}
           >
             {mode === 'login' ? 'Need an account? Register' : 'Already have an account? Login'}
           </button>
 
-          <div className="mt-6 pt-4 border-t border-white/10 grid grid-cols-3 gap-3 text-center text-[10px] uppercase tracking-[0.12em]">
-            <div className="space-y-1 text-white/70">
-              <ShieldCheck size={14} className="mx-auto text-gold-400" />
+          <div className={`mt-6 pt-4 border-t ${tc.border} grid grid-cols-3 gap-3 text-center text-[10px] uppercase tracking-[0.12em]`}>
+            <div className={`space-y-1 ${tc.textMuted}`}>
+              <ShieldCheck size={14} className={`mx-auto ${tc.accent}`} />
               <p>Secure</p>
             </div>
-            <div className="space-y-1 text-white/70">
-              <Star size={14} className="mx-auto text-gold-400" />
+            <div className={`space-y-1 ${tc.textMuted}`}>
+              <Star size={14} className={`mx-auto ${tc.accent}`} />
               <p>Streaks</p>
             </div>
-            <div className="space-y-1 text-white/70">
-              <Moon size={14} className="mx-auto text-gold-400" />
+            <div className={`space-y-1 ${tc.textMuted}`}>
+              <Moon size={14} className={`mx-auto ${tc.accent}`} />
               <p>Faith</p>
             </div>
           </div>
