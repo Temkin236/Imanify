@@ -15,7 +15,7 @@ services:
       - key: PORT
         value: "3000"
       - key: CORS_ORIGIN
-        value: "https://imanify.vercel.app,https://imanify-git-main-temkin236.vercel.app,http://localhost:3001,http://localhost:5173"
+        value: "https://imanify.vercel.app,https://imanify-8.onrender.com,http://localhost:3001,http://localhost:5173"
       - key: GROQ_API_KEY
         sync: false
       - key: OPENROUTER_API_KEY

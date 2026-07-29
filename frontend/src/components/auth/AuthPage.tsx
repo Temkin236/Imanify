@@ -102,6 +102,11 @@ export function AuthPage({ mode, onSwitchMode, onSuccess }: AuthPageProps) {
 
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-center">{title}</h1>
           <p className={`mt-2 text-sm ${tc.textMuted} text-center`}>{subtitle}</p>
+          {mode === 'login' && (
+            <p className="mt-3 text-xs text-center text-amber-400/80 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-2">
+              Live app? Tap <strong>Register</strong> first — accounts on your computer are not on the server.
+            </p>
+          )}
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <label className="block">

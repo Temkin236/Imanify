@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Surah, Verse } from '../types';
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) || 'http://localhost:3000/api';
+import { API_BASE_URL } from '../config/api';
 const EXTERNAL_API = 'https://api.alquran.cloud/v1';
 
 interface CacheEntry<T> {

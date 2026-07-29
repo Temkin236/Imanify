@@ -20,13 +20,19 @@ interface AuthRequest {
 export async function loginRequest(credentials: AuthRequest): Promise<AuthPayload> {
   return apiRequest<AuthPayload>('/auth/login', {
     method: 'POST',
-    body: JSON.stringify(credentials)
+    body: JSON.stringify({
+      email: credentials.email.trim().toLowerCase(),
+      password: credentials.password
+    })
   });
 }
 
 export async function registerRequest(credentials: AuthRequest): Promise<AuthPayload> {
   return apiRequest<AuthPayload>('/auth/register', {
     method: 'POST',
-    body: JSON.stringify(credentials)
+    body: JSON.stringify({
+      email: credentials.email.trim().toLowerCase(),
+      password: credentials.password
+    })
   });
 }

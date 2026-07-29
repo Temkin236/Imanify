@@ -26,7 +26,8 @@ export async function login(req: CustomRequest, res: Response): Promise<void> {
     // Reload database to ensure we have latest user data
     reloadDatabase();
 
-    const user = getUser(email);
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const user = getUser(normalizedEmail);
     console.log('[Auth] User found:', !!user);
 
     if (!user || user.password !== password) {
@@ -39,9 +40,9 @@ export async function login(req: CustomRequest, res: Response): Promise<void> {
     }
 
     const token = generateToken();
-    tokenToEmailMap.set(token, email);
+    tokenToEmailMap.set(token, normalizedEmail);
 
-    console.log('[Auth] Login successful:', email);
+    console.log('[Auth] Login successful:', normalizedEmail);
 
     res.json({
       success: true,
@@ -90,8 +91,10 @@ export async function register(req: CustomRequest, res: Response): Promise<void>
     // Reload database to ensure we have latest data
     reloadDatabase();
 
-    if (userExists(email)) {
-      console.log('[Auth] Register failed - email already exists:', email);
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    if (userExists(normalizedEmail)) {
+      console.log('[Auth] Register failed - email already exists:', normalizedEmail);
       res.status(409).json({
         success: false,
         error: 'Email already registered'
@@ -99,11 +102,11 @@ export async function register(req: CustomRequest, res: Response): Promise<void>
       return;
     }
 
-    const newUser = createUser(email, password);
+    const newUser = createUser(normalizedEmail, password);
     const token = generateToken();
-    tokenToEmailMap.set(token, email);
+    tokenToEmailMap.set(token, normalizedEmail);
 
-    console.log('[Auth] Register successful:', email);
+    console.log('[Auth] Register successful:', normalizedEmail);
 
     res.status(201).json({
       success: true,

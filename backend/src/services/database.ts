@@ -51,7 +51,16 @@ function writeDatabase(users: Map<string, StoredUser>): void {
 let usersCache = readDatabase();
 
 export function getUser(email: string): StoredUser | null {
-  return usersCache.get(email) || null;
+  const key = email.trim().toLowerCase();
+  if (usersCache.has(key)) {
+    return usersCache.get(key) || null;
+  }
+  for (const [storedEmail, user] of usersCache) {
+    if (storedEmail.toLowerCase() === key) {
+      return user;
+    }
+  }
+  return null;
 }
 
 export function createUser(email: string, password: string): StoredUser {
@@ -85,7 +94,7 @@ export function getAllUsers(): StoredUser[] {
 }
 
 export function userExists(email: string): boolean {
-  return usersCache.has(email);
+  return getUser(email) !== null;
 }
 
 // Sync updates from disk
