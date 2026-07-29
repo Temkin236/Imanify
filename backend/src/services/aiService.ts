@@ -68,9 +68,10 @@ class UnifiedAIService {
     }
 
     if (this.providers.length === 0) {
-      throw new Error(
-        '[CRITICAL] No AI providers configured. Please set at least one of: OPENROUTER_API_KEY, GROQ_API_KEY, or GEMINI_API_KEY'
+      console.warn(
+        '[AIService] ⚠ No AI providers configured — server will start; chat uses Islamic Knowledge Base fallback. Set GROQ_API_KEY, GEMINI_API_KEY, or OPENROUTER_API_KEY on Render.'
       );
+      return;
     }
 
     console.log(

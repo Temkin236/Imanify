@@ -72,12 +72,10 @@ class UnifiedAIService {
     }
 
     if (this.providers.length === 0) {
-      console.error(
-        '[AIService] ❌ CRITICAL: No AI providers configured'
+      console.warn(
+        '[AIService] ⚠ No AI providers configured — server will start; chat uses Islamic Knowledge Base fallback. Set GROQ_API_KEY, GEMINI_API_KEY, or OPENROUTER_API_KEY on Render.'
       );
-      throw new Error(
-        'No AI providers configured. Please set at least one API key.'
-      );
+      return;
     }
 
     console.log(
@@ -92,6 +90,13 @@ class UnifiedAIService {
     messages: AIMessage[],
     mode: AssistantMode = 'general'
   ): Promise<AIResponse> {
+    if (this.providers.length === 0) {
+      throw new AppError(
+        'No AI providers configured. Using offline Islamic knowledge base.',
+        503
+      );
+    }
+
     // Get system prompt for mode
     const systemPrompt = promptManager.getSystemPrompt(mode);
 
@@ -192,6 +197,13 @@ class UnifiedAIService {
   }
 
   /**
+   * Whether at least one cloud AI provider is configured
+   */
+  hasProviders(): boolean {
+    return this.providers.length > 0;
+  }
+
+  /**
    * Get provider status for health checks
    */
   async getStatus(): Promise<{
@@ -199,6 +211,14 @@ class UnifiedAIService {
     cacheSize: number;
     totalMessages: number;
   }> {
+    if (this.providers.length === 0) {
+      return {
+        providers: [],
+        cacheSize: this.responseCache.size,
+        totalMessages: 0
+      };
+    }
+
     const providerStatus = await Promise.all(
       this.providers.map(async (provider, index) => ({
         name: this.providerNames[index],
