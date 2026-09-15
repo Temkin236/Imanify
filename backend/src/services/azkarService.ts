@@ -29,6 +29,14 @@ class AzkarService {
     return this.azkar;
   }
 
+  async getById(id: number): Promise<AzkarItem> {
+    const item = this.azkar.find((z) => z.id === id);
+    if (!item) {
+      throw new NotFoundError(`Azkar item with id ${id}`);
+    }
+    return item;
+  }
+
   async getByCategory(category: string): Promise<AzkarItem[]> {
     const normalized = category.trim().toLowerCase();
     const filtered = this.azkar.filter((item) => item.category.toLowerCase() === normalized);
@@ -38,6 +46,31 @@ class AzkarService {
     }
 
     return filtered;
+  }
+
+  async getCategories(): Promise<string[]> {
+    const categoriesSet = new Set<string>();
+    for (const item of this.azkar) {
+      if (item.category) {
+        categoriesSet.add(item.category.toLowerCase());
+      }
+    }
+    return Array.from(categoriesSet);
+  }
+
+  async search(query: string): Promise<AzkarItem[]> {
+    const term = query.trim().toLowerCase();
+    if (!term) {
+      return this.azkar;
+    }
+
+    return this.azkar.filter(
+      (item) =>
+        item.arabic.toLowerCase().includes(term) ||
+        item.translation_en.toLowerCase().includes(term) ||
+        item.translation_am.toLowerCase().includes(term) ||
+        item.category.toLowerCase().includes(term)
+    );
   }
 }
 
