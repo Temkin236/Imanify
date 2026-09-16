@@ -40,3 +40,47 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  streak: number;
+  achievements: string[];
+  lastActiveDate: string;
+  createdAt: string;
+}
+
+export interface AchievementBadge {
+  id: string;
+  title: string;
+  title_am?: string;
+  description: string;
+  icon: string;
+  requiredDays: number;
+  unlockedAt?: string;
+}
+
+export type CalculationMethodId = 1 | 2 | 3 | 4 | 5;
+
+export interface PrayerCalculationMethod {
+  id: CalculationMethodId;
+  name: string;
+  description: string;
+}
+
+export interface PrayerSettings {
+  city: string;
+  country: string;
+  method: CalculationMethodId;
+  notificationsEnabled: boolean;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface IslamicDate {
+  readable: string;
+  hijriDate: string;
+  day?: string;
+  month?: string;
+  year?: string;
+}
