@@ -65,7 +65,10 @@ app.get('/api/health', (_req: Request, res: Response) => {
     success: true,
     data: {
       status: 'OK',
-      message: 'Imanify Backend is running'
+      message: 'Imanify Backend is running',
+      version: '1.0.0',
+      uptimeSeconds: Math.floor(process.uptime()),
+      environment: process.env.NODE_ENV || 'development'
     },
     timestamp: new Date().toISOString()
   } as ApiResponse<object>);
