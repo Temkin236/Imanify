@@ -18,8 +18,11 @@ interface Config {
 
   // AI Providers (Cloud-based, optimized for Ethiopia)
   openrouterApiKey?: string;
+  openrouterModel?: string;
   groqApiKey?: string;
+  groqModel?: string;
   geminiApiKey?: string;
+  geminiModel?: string;
 
   // Rate Limiting
   rateLimitWindowMs: number;
@@ -67,8 +70,11 @@ class ConfigManager {
       alquranApiTimeout: parseInt(process.env.ALQURAN_API_TIMEOUT || '5000', 10),
       apiCacheTtlHours: parseInt(process.env.API_CACHE_TTL_HOURS || '24', 10),
       openrouterApiKey: process.env.OPENROUTER_API_KEY,
+      openrouterModel: process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
       groqApiKey: process.env.GROQ_API_KEY,
+      groqModel: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
       geminiApiKey: process.env.GEMINI_API_KEY,
+      geminiModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
       rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
       logFilePath: process.env.LOG_FILE_PATH || './logs/server.log',

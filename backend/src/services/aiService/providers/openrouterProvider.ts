@@ -48,10 +48,10 @@ export class OpenRouterProvider extends BaseAIProvider {
   private readonly baseUrl = 'https://openrouter.ai/api/v1/chat/completions';
   private readonly appName = 'Imanify';
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, model: string = 'meta-llama/llama-3.3-70b-instruct:free') {
     super({
       apiKey,
-      model: 'meta-llama/llama-2-70b-chat',
+      model: model || 'meta-llama/llama-3.3-70b-instruct:free',
       maxTokens: 2000,
       temperature: 0.7,
       timeout: 30000
@@ -163,7 +163,7 @@ export class OpenRouterProvider extends BaseAIProvider {
         })
       });
 
-      return response.status !== 401 && response.status !== 403;
+      return response.ok;
     } catch {
       return false;
     }

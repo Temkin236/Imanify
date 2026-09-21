@@ -47,10 +47,10 @@ export class GeminiProvider extends BaseAIProvider {
   private readonly baseUrl =
     'https://generativelanguage.googleapis.com/v1beta/models';
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, model: string = 'gemini-2.5-flash') {
     super({
       apiKey,
-      model: 'gemini-1.5-flash',
+      model: model || 'gemini-2.5-flash',
       maxTokens: 2000,
       temperature: 0.7,
       timeout: 30000
@@ -159,7 +159,7 @@ export class GeminiProvider extends BaseAIProvider {
         }
       );
 
-      return response.status !== 401 && response.status !== 403;
+      return response.ok;
     } catch {
       return false;
     }

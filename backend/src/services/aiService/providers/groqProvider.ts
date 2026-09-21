@@ -50,10 +50,10 @@ interface GroqResponse {
 export class GroqProvider extends BaseAIProvider {
   private readonly baseUrl = 'https://api.groq.com/openai/v1/chat/completions';
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, model: string = 'openai/gpt-oss-120b') {
     super({
       apiKey,
-      model: 'llama-3.3-70b-versatile',
+      model: model || 'openai/gpt-oss-120b',
       maxTokens: 2000,
       temperature: 0.7,
       timeout: 20000 // Groq is very fast, use shorter timeout
@@ -157,7 +157,7 @@ export class GroqProvider extends BaseAIProvider {
         })
       });
 
-      return response.status !== 401 && response.status !== 403;
+      return response.ok;
     } catch {
       return false;
     }
