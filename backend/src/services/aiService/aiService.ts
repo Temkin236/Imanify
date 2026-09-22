@@ -28,7 +28,6 @@ class UnifiedAIService {
   private responseCache: Map<string, CacheEntry> = new Map();
   private readonly cacheTimeoutMs = 24 * 60 * 60 * 1000; // 24 hours
   private readonly requestTimeoutMs = 30000; // 30 seconds
-  private lastUsedProvider = 0;
 
   constructor() {
     this.initializeProviders();
@@ -44,9 +43,10 @@ class UnifiedAIService {
     // Priority 1: Groq (Fastest)
     const groqKey = config.get('groqApiKey');
     if (typeof groqKey === 'string' && groqKey.length > 0) {
-      this.providers.push(new GroqProvider(groqKey));
+      const groqModel = config.get('groqModel');
+      this.providers.push(new GroqProvider(groqKey, groqModel));
       this.providerNames.push('Groq');
-      console.log('[AIService] ✓ Groq configured (priority 1)');
+      console.log(`[AIService] ✓ Groq configured (priority 1, model: ${groqModel || 'openai/gpt-oss-120b'})`);
     } else {
       console.log('[AIService] ⚠ Groq not configured');
     }
@@ -54,9 +54,10 @@ class UnifiedAIService {
     // Priority 2: Gemini (Reliable)
     const geminiKey = config.get('geminiApiKey');
     if (typeof geminiKey === 'string' && geminiKey.length > 0) {
-      this.providers.push(new GeminiProvider(geminiKey));
+      const geminiModel = config.get('geminiModel');
+      this.providers.push(new GeminiProvider(geminiKey, geminiModel));
       this.providerNames.push('Gemini');
-      console.log('[AIService] ✓ Gemini configured (priority 2)');
+      console.log(`[AIService] ✓ Gemini configured (priority 2, model: ${geminiModel || 'gemini-2.5-flash'})`);
     } else {
       console.log('[AIService] ⚠ Gemini not configured');
     }
@@ -64,9 +65,10 @@ class UnifiedAIService {
     // Priority 3: OpenRouter (Most models)
     const openrouterKey = config.get('openrouterApiKey');
     if (typeof openrouterKey === 'string' && openrouterKey.length > 0) {
-      this.providers.push(new OpenRouterProvider(openrouterKey));
+      const openrouterModel = config.get('openrouterModel');
+      this.providers.push(new OpenRouterProvider(openrouterKey, openrouterModel));
       this.providerNames.push('OpenRouter');
-      console.log('[AIService] ✓ OpenRouter configured (priority 3)');
+      console.log(`[AIService] ✓ OpenRouter configured (priority 3, model: ${openrouterModel || 'meta-llama/llama-3.3-70b-instruct:free'})`);
     } else {
       console.log('[AIService] ⚠ OpenRouter not configured');
     }
@@ -110,44 +112,21 @@ class UnifiedAIService {
 
     const errors: ProviderError[] = [];
 
-    // Try each provider in order
+    // Try each provider in prioritized order (Fastest first, with automatic fallback)
     for (let i = 0; i < this.providers.length; i++) {
-      const providerIndex =
-        (this.lastUsedProvider + i) % this.providers.length;
-      const provider = this.providers[providerIndex];
-      const providerName = this.providerNames[providerIndex];
+      const provider = this.providers[i];
+      const providerName = this.providerNames[i];
 
       try {
         console.log(
-          `[AIService] Attempting provider: ${providerName} (${providerIndex + 1}/${this.providers.length})`
+          `[AIService] Attempting provider: ${providerName} (${i + 1}/${this.providers.length})`
         );
 
-        // Check if provider is available
-        const isAvailable = await this.withTimeout(
-          provider.isAvailable(),
-          3000
-        );
-
-        if (!isAvailable) {
-          console.log(
-            `[AIService] ⚠ ${providerName} not available, trying next...`
-          );
-          errors.push({
-            provider: providerName,
-            error: 'Provider not available'
-          });
-          continue;
-        }
-
-        // Generate response
+        // Generate response directly with provider timeout
         const response = await this.withTimeout(
           provider.generateResponse(messages, systemPrompt),
           this.requestTimeoutMs
         );
-
-        // Update last used provider for load balancing
-        this.lastUsedProvider =
-          (providerIndex + 1) % this.providers.length;
 
         // Cache the response
         this.saveToCache(cacheKey, response);
